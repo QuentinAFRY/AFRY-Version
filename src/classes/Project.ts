@@ -32,6 +32,8 @@ export class Project implements IProject {
     if (!this.id) {this.id = uuidv4()}
     this.setUI()
   }
+
+  //creates the project card UI
   setUI() {
     if (this.ui && this.ui instanceof HTMLDivElement) {return}
     this.ui = document.createElement("div");
