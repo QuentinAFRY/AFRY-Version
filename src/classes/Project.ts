@@ -24,6 +24,7 @@ export class Project implements IProject {
   cost: number = 0;
   progress: number = 0;
   id: string;
+  contactPerson: string = "Quentin Hamm";
 
   constructor(data: IProject) {
     for (const key in data) {

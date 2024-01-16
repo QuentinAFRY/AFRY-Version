@@ -23,11 +23,58 @@ export class ProjectsManager {
       if (!projectsPage || !detailsPage) {return}
       projectsPage.style.display = "none"
       detailsPage.style.display = "flex"
+      this.setDetailsPage(project)
     })
     this.ui.append(project.ui)
     this.list.push(project)
     return project
   }
+
+  private setDetailsPage(project: Project) {
+    const detailsPage = document.getElementById("project-details")
+    if (!detailsPage) {return}
+
+    function updateDetailsPage(project, propertyList) {
+      propertyList.forEach(property => {
+        const attribute = `data-project-info='${property}'`
+        const element = detailsPage?.querySelector(`[${attribute}]`)
+
+        if (element && project[property] && property!="finishDate") {
+          try {
+            element.textContent = project[property]
+          } catch (err) {
+            console.log(err, `The following property was causing issues: ${property}`)
+          }
+        } else if (element && project[property] && property==="finishDate") {
+          try {
+            const date = project[property] as Date
+            const newDate = date.toLocaleDateString('de-DE')
+            element.textContent = newDate
+          } catch (err) {
+            console.log(err, `The following property was causing issues: ${property}`)
+          }
+        } else if (element && project[property] && property==="progress") {
+          try {
+            const date = project[property] as Date
+            const newDate = date.toLocaleDateString('de-DE')
+            element.textContent = newDate
+          } catch (err) {
+            console.log(err, `The following property was causing issues: ${property}`)
+          }
+      }})}
+    
+    const propertiesToUpdate = [
+      "name", 
+      "description", 
+      "projectStatus", 
+      "businessUnit", 
+      "contactPerson", 
+      "finishDate",
+      "progress"
+    ]
+
+    updateDetailsPage(project, propertiesToUpdate)
+    }
 
   defaultProject = () => {
     const data: IProject = {
