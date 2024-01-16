@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside id="sidebar">
+      <img
+        id="company-logo"
+        src="./Assets/AFRY_Logotype_Horizontal (1).svg"
+        alt="Construction Company"
+      />
+      <ul id="nav-buttons">
+        <li id="side-bar-projects">
+          <span class="material-icons-sharp"> location_city </span> Projects
+        </li>
+        <li><span class="material-icons-sharp"> compost </span> LCA-Data</li>
+        <li><span class="material-icons-sharp"> verified </span> Report</li>
+        <li><span class="material-icons-sharp"> people_alt </span> Users</li>
+      </ul>
+    </aside>
+    <!-- Main Content -->
+    <main id="content">
+      <!-- Projects Page -->
+      <div class="page" id="projects-page">
+        <dialog id="new-project-modal">
+          <form id="new-project-form">
+            <h3>New Project</h3>
+            <div class="dialog-container">
+              <div class="form-field-container">
+                <label
+                  ><span class="material-icons-sharp"> apartment </span>Project
+                  name</label
+                >
+                <input
+                  name="name"
+                  type="text"
+                  placeholder="What's the name of your project?"
+                />
+                <p
+                  style="
+                    color: gray;
+                    font-size: var(--font-sm);
+                    margin-top: 5px;
+                    font-style: italic;
+                  "
+                >
+                  TIP: Give it a short name
+                </p>
+              </div>
+              <div class="form-field-container">
+                <label
+                  ><span class="material-icons-sharp"> density_small </span
+                  >Description</label
+                >
+                <textarea
+                  name="description"
+                  cols="30"
+                  rows="5"
+                  placeholder="Give your project a nice description! So people is jealous about it."
+                ></textarea>
+              </div>
+              <div class="form-field-container">
+                <label
+                  ><span class="material-icons-sharp"> manage_accounts </span
+                  >Business Unit</label
+                >
+                <select name="businessUnit">
+                  <option>none</option>
+                  <option>Transportation</option>
+                  <option>Sustainability</option>
+                  <option>Energy</option>
+                  <option>Industrial</option>
+                </select>
+              </div>
+              <div class="form-field-container">
+                <label
+                  ><span class="material-icons-sharp"> task_alt </span
+                  >Status</label
+                >
+                <select name="projectStatus">
+                  <option>Pending</option>
+                  <option>Active</option>
+                  <option>Finished</option>
+                </select>
+              </div>
+              <div class="form-field-container">
+                <label for="finishDate">
+                  <span class="material-icons-sharp"> calendar_month </span>
+                  Finish Date
+                </label>
+                <input name="finishDate" type="date" name="finishDate" />
+              </div>
+              <div class="form-button-container">
+                <button
+                  type="button"
+                  class="form-cancel-btn"
+                  id="cancel-project-btn"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  class="form-accept-btn"
+                  id="accept-project-btn"
+                >
+                  Accept
+                </button>
+              </div>
+            </div>
+          </form>
+        </dialog>
+        <dialog id="error-dialog">
+          <div id="error-dialog-container">
+            <span
+              class="material-icons-sharp"
+              style="
+                padding: 0 10px;
+                align-self: center;
+                justify-self: center;
+                scale: 1.3;
+              "
+            >
+              error_outline
+            </span>
+            <p id="error-message" style="padding: 0 10px"></p>
+            <button id="error-dialog-btn">OK</button>
+          </div>
+        </dialog>
+        <header>
+          <h2>Projects</h2>
+          <div style="display: flex; gap: 20px;">
+            <span style="border: solid 1px var(--primary-grey-200)" id="import-projects-btn" class="material-symbols-outlined" style="scale: 1.2;">
+              upload</span
+            >
+            <span style="border: solid 1px var(--primary-grey-200)" id="export-projects-btn" class="material-symbols-outlined" style="scale: 1.2;"> download </span>
+            <button id="new-project-btn">
+              <span class="material-icons-sharp"> upload_file </span>New Project
+            </button>
+          </div>
+        </header>
+        <div id="projects-list"></div>
+      </div>
+      <!-- Project Details Page -->
+      <div class="page" id="project-details" style="display: none">
+        <header>
+          <div>
+            <h2>Berlin Spandau</h2>
+            <p>Ausbau und Erweiterung der Bahnverbindung Berlin Spandau</p>
+          </div>
+        </header>
+        <div class="main-page-content">
+          <div style="display: flex; flex-direction: column; row-gap: 30px">
+            <div class="dashboard-card">
+              <div class="dashboard-header" style="align-items: center">
+                <div
+                  class="card-logo"
+                  style="height: 60px; border-radius: 100%"
+                >
+                  <p>BSPN</p>
+                </div>
+                <button>
+                  <span style="scale: 0.7" class="material-icons-sharp">
+                    edit </span
+                  >Edit
+                </button>
+              </div>
+              <div style="flex-direction: column">
+                <h5>Berlin Spandau</h5>
+                <p>
+                  Ausbau und Erweiterung der Bahnverbindung Berlin Spandau.
+                  Erstellung mehrerer Varianten und anschließender Vergleich der
+                  Kosten und Emissionen.
+                </p>
+              </div>
+              <div>
+                <div>
+                  <p style="color: var(--primary-grey-300)">Status</p>
+                  <p>Active</p>
+                </div>
+                <div>
+                  <p style="color: var(--primary-grey-300)">Business Unit</p>
+                  <p>Transportation</p>
+                </div>
+                <div>
+                  <p style="color: var(--primary-grey-300)">Contact Person</p>
+                  <p>Quentin Hamm</p>
+                </div>
+                <div>
+                  <p style="color: var(--primary-grey-300)">Finish date</p>
+                  <p>06-05-2024</p>
+                </div>
+              </div>
+              <div style="margin-bottom: 0; color: var(--primary-grey-300)">
+                <p>Progress:</p>
+              </div>
+              <div style="display: flex; flex-direction: row; margin-top: 5px">
+                <div
+                  style="
+                    background-color: rgba(36, 218, 60, 0.795);
+                    background-clip: content-box;
+                    border: 2px solid var(--primary-green-100);
+                    border-right: none;
+                    border-radius: 8px 0 0 8px;
+                    width: 45%;
+                    height: 25px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                >
+                  <p style="text-align: center">45%</p>
+                </div>
+                <div
+                  style="
+                    background-color: var(--primary-green-400);
+                    background-clip: content-box;
+                    border: 2px solid var(--primary-green-100);
+                    border-left: none;
+                    border-radius: 0 8px 8px 0;
+                    width: 55%;
+                    height: 25px;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                ></div>
+              </div>
+            </div>
+            <div class="dashboard-card" style="flex-grow: 1">
+              <div id="Top Bar" style="align-items: center">
+                <h5>Tasks</h5>
+                <div>
+                  <span class="material-icons-sharp" style="scale: 0.9">
+                    search
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Search tasks..."
+                    style="
+                      height: 5px;
+                      background-color: var(--primary-grey-200);
+                      margin: 0 2px;
+                    "
+                  />
+                  <span class="material-icons-sharp" style="scale: 0.9">
+                    add
+                  </span>
+                </div>
+              </div>
+              <div
+                id="To-Do's"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  gap: 15px;
+                  padding: 10px;
+                "
+              >
+                <div class="to-do-card">
+                  <div class="to-do-logo-container">
+                    <span class="material-icons-sharp" style="scale: 1.3">
+                      construction
+                    </span>
+                  </div>
+                  <p>Überarbeitung der Trassen im Streckenabschnitt 1</p>
+                  <p style="text-align: right; font-style: italic">
+                    29-11-2023
+                  </p>
+                </div>
+                <div class="to-do-card">
+                  <div class="to-do-logo-container">
+                    <span class="material-icons-sharp" style="scale: 1.3">
+                      construction
+                    </span>
+                  </div>
+                  <p>Überarbeitung der Trassen im Streckenabschnitt 1</p>
+                  <p style="text-align: right; font-style: italic">
+                    29-11-2023
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="viewer-container" class="dashboard-card"></div>
+        </div>
+      </div>
+      <!-- Project Users Page -->
+      <div class="page" id="project-users" style="display: none">
+        <div id="users-container">
+          <div id="users-header">
+            <div style="display: flex; gap: 30px">
+              <p>Manage Users</p>
+              <p>(10)</p>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center">
+              <span class="material-symbols-outlined"> search </span>
+              <input
+                type="text"
+                placeholder="Search by name..."
+                style="
+                  font-size: var(--font-style-XS);
+                  color: var(--primary-beige);
+                  height: 5px;
+                  background-color: #5e5e5eb6;
+                  margin: 0 2px;
+                "
+              />
+              <span
+                class="material-symbols-outlined"
+                style="margin: 0 60px 0 20px"
+              >
+                filter_list
+              </span>
+              <button
+                id="new-user-btn"
+                style="
+                  display: flex;
+                  gap: 10px;
+                  background-color: var(--primary-blue-200);
+                  border-radius: 5px;
+                  padding: 5px 10px;
+                "
+              >
+                <p>Invite</p>
+                <span class="material-symbols-outlined"> person_add </span>
+              </button>
+            </div>
+          </div>
+          <div id="users-table-header">
+            <span class="material-symbols-outlined">
+              check_box_outline_blank
+            </span>
+            <div style="display: flex; gap: 20px">
+              <p>Name</p>
+              <span class="material-symbols-outlined" style="scale: 0.8">
+                expand_more
+              </span>
+            </div>
+            <div style="display: flex; gap: 20px">
+              <p>Email</p>
+              <span class="material-symbols-outlined" style="scale: 0.8">
+                expand_more
+              </span>
+            </div>
+            <p>Permissions</p>
+            <p>Teams</p>
+          </div>
+          <div id="users-table">
+            <div class="user-entry">
+              <img src="./Assets/TestIcon.jpg" alt="User Pic" />
+              <p>Quentin Hamm</p>
+              <a href="mailto:quentinhamm@test.com">quentinhamm@test.com</a>
+              <div class="user-permissions">
+                <p>Model Data,</p>
+                <p>LCA,</p>
+                <p>Project,</p>
+              </div>
+              <div class="user-teams">
+                <p>BSPN</p>
+                <p>HHBH</p>
+                <p>LZBH</p>
+              </div>
+              <span class="material-symbols-outlined"> more_vert </span>
+            </div>
+            <div class="user-entry">
+              <img src="./Assets/TestIcon2.jpg" alt="User Pic" />
+              <p>Jeff Lincoln</p>
+              <a href="mailto:jefflincoln@test.com">jefflincoln@test.com</a>
+              <div class="user-permissions">
+                <p>Model Data,</p>
+                <p>Project</p>
+              </div>
+              <div class="user-teams">
+                <p>LZBH</p>
+              </div>
+              <span class="material-symbols-outlined"> more_vert </span>
+            </div>
+            <div class="user-entry">
+              <img src="./Assets/testicon3.jpg" alt="User Pic" />
+              <p>Jenna Müller</p>
+              <a href="mailto:jennamüller@test.com">jennamüller@test.com</a>
+              <div class="user-permissions">
+                <p>Model Data,</p>
+                <p>LCA</p>
+              </div>
+              <div class="user-teams">
+                <p>HHBH</p>
+                <p>BSPN</p>
+              </div>
+              <span class="material-symbols-outlined"> more_vert </span>
+            </div>
+          </div>
+        </div>
+        <dialog id="new-user">
+          <form>
+            <h3>Add User</h3>
+            <div class="dialog-container">
+              <div class="form-field-container">
+                <span
+                  class="material-symbols-outlined"
+                  style="
+                    font-size: 130px;
+                    background-color: var(--primary-white);
+                    align-self: center;
+                    border: 1px solid var(--primary-black);
+                    border-radius: 30%;
+                    padding: 20px;
+                    color: var(--primary-black);
+                  "
+                >
+                  account_circle
+                </span>
+                <p
+                  style="
+                    text-align: center;
+                    color: var(--primary-grey-200);
+                    font-size: var(--font-style-XS);
+                    margin-top: 5px;
+                    font-style: italic;
+                  "
+                >
+                  Click on the icon to add a picture
+                </p>
+              </div>
+              <div class="form-field-container">
+                <label>Name</label>
+                <input type="text" placeholder="Type name here..." />
+              </div>
+              <div class="form-field-container">
+                <label
+                  ><span class="material-icons-sharp" style="scale: 0.8">
+                    alternate_email </span
+                  >Email</label
+                >
+                <input type="text" placeholder="email@example.com" />
+              </div>
+              <div class="form-field-container">
+                <label
+                  ><span class="material-icons-sharp"> manage_accounts </span
+                  >Permissions</label
+                >
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: 30px 1fr;
+                    align-items: center;
+                  "
+                >
+                  <input
+                    type="checkbox"
+                    id="Permission1"
+                    name="Permission1"
+                    value="model-data"
+                    style="width: fit-content"
+                  />
+                  <label for="vehicle1" style="margin-bottom: 0">
+                    Allow model management</label
+                  >
+                  <input
+                    type="checkbox"
+                    id="Permission2"
+                    name="Permission2"
+                    value="Projekt-Management"
+                    style="width: fit-content"
+                  />
+                  <label for="vehicle2" style="margin-bottom: 0">
+                    Project management rights</label
+                  >
+                  <input
+                    type="checkbox"
+                    id="Permission3"
+                    name="Permission3"
+                    value="lca-analysis"
+                    style="width: fit-content"
+                  />
+                  <label for="vehicle3" style="margin-bottom: 0">
+                    LCA-Analysis access</label
+                  >
+                  <input
+                    type="checkbox"
+                    id="Permission4"
+                    name="Permission4"
+                    value="read-only"
+                    style="width: fit-content"
+                  />
+                  <label for="vehicle3" style="margin-bottom: 0">
+                    Read only</label
+                  >
+                </div>
+              </div>
+              <div class="form-field-container">
+                <label
+                  ><span class="material-icons-sharp"> groups_3 </span
+                  >Teams</label
+                >
+                <select name="teams" multiple>
+                  <option>HHBH</option>
+                  <option>BSPN</option>
+                  <option>LZBH</option>
+                </select>
+              </div>
+              <div class="form-button-container">
+                <button class="form-cancel-btn" id="cancel-user-btn">
+                  Cancel
+                </button>
+                <button class="form-accept-btn" id="accept-user-btn">
+                  Add
+                </button>
+              </div>
+            </div>
+          </form>
+        </dialog>
+      </div>
+    </main>
+    <script type="module" src="./src/index.ts"></script>
+  </body>
+</html>
