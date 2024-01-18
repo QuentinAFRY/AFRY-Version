@@ -59,6 +59,15 @@
                 >
                   TIP: Give it a short name
                 </p>
+                <label style="margin-top: 10px;"
+                  ><span class="material-icons-sharp"> abc </span>Project
+                  acronym </label
+                >
+                <input
+                  name="acronym"
+                  type="text"
+                  placeholder="Choose an acronym of 4 letters"
+                />
               </div>
               <div class="form-field-container">
                 <label
@@ -102,6 +111,19 @@
                   Finish Date
                 </label>
                 <input name="finishDate" type="date" name="finishDate" />
+              </div>
+              <div class="form-field-container">
+                <label
+                  ><span class="material-icons-sharp"> hourglass-bottom </span>Project
+                  progress (%) </label
+                >
+                <input
+                  name="progress"
+                  type="number"
+                  min="0"
+                  max="100"
+                  placeholder="Specify the current progress"
+                />
               </div>
               <div class="form-button-container">
                 <button
@@ -157,8 +179,8 @@
       <div class="page" id="project-details" style="display: none">
         <header>
           <div>
-            <h2 data-project-info="ame">Empty</h2>
-            <p data-project-info="headerDescription">Ausbau und Erweiterung der Bahnverbindung Berlin Spandau</p>
+            <h2 data-project-info="name">Empty</h2>
+            <p data-project-info="headerDescription">Kurze Projektbeschreibung</p>
           </div>
         </header>
         <div class="main-page-content">
@@ -169,7 +191,7 @@
                   class="card-logo"
                   style="height: 60px; border-radius: 100%"
                 >
-                  <p>BSPN</p>
+                  <p data-project-info="acronym"></p>
                 </div>
                 <button>
                   <span style="scale: 0.7" class="material-icons-sharp">
@@ -207,7 +229,7 @@
                 <p>Progress:</p>
               </div>
               <div style="display: flex; flex-direction: row; margin-top: 5px;">
-                <div
+                <div data-project-info="progressBar"
                   style="
                     background-color: rgba(36, 218, 60, 0.795);
                     background-clip: content-box;
@@ -221,9 +243,9 @@
                     justify-content: center;
                     text-align: center
                   "
-                >45%
+                >
                 </div>
-                <div
+                <div data-project-info="progressContainer"
                   style="
                     background-color: var(--primary-green-400);
                     background-clip: content-box;
@@ -232,8 +254,11 @@
                     border-radius: 0 8px 8px 0;
                     width: 55%;
                     height: 25px;
+                    display: flex;
                     align-items: center;
                     justify-content: center;
+                    text-align: center;
+                    color: var(--primary-black);
                   "
                 ></div>
               </div>

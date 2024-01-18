@@ -34,11 +34,13 @@ if (projectForm && projectForm instanceof HTMLFormElement) {
     const formData = new FormData(projectForm);
 
     const projectData: IProject = {
+      acronym: formData.get("acronym") as string,
       name: formData.get("name") as string,
       description: formData.get("description") as string,
       businessUnit: formData.get("businessUnit") as BusinessUnit,
       projectStatus: formData.get("projectStatus") as ProjectStatus,
       finishDate: new Date(formData.get("finishDate") as string),
+      progress: Number(formData.get("progress") ?? 0),
     };
 
     try {
