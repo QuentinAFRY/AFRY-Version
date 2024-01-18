@@ -165,8 +165,8 @@ select {
 }
 
 .card-header {
-  display: flex;
-  column-gap: 20px;
+  display: grid;
+  grid-template-columns: 80px 1fr;
   padding: 15px 20px;
   justify-content: start;
   border-bottom: 2px solid var(--primary-green-300);
@@ -181,6 +181,7 @@ select {
   align-items: center;
   justify-content: center;
   width: 60px;
+  height: 60px;
 }
 
 .card-header p {
@@ -189,11 +190,15 @@ select {
   -webkit-line-clamp: 2;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 .card-logo p {
   font-weight: 500;
+  white-space: nowrap;
+  font-size: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .project-logo {
