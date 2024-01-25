@@ -40,7 +40,7 @@ export class Project implements IProject {
 
     if (!this.id) {this.id = uuidv4()}
 
-    //Wenn der Name aus weniger als 5 Zeichen besteht, dann wird ein Error generiert 
+    //Wenn der Name aus weniger als 5 Zeichen besteht, dann wird ein Error erstellt 
     if (this.name.length<5) {throw new Error(`The name "${this.name}" is invalid. Name must contain at least 5 characters`)}
     
     this.setLogoColor()
