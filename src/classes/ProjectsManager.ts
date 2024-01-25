@@ -34,7 +34,7 @@ export class ProjectsManager {
     const detailsPage = document.getElementById("project-details")
     if (!detailsPage) {return}
 
-    //Flexible progress bar - depending on progress value
+    //Flexible progress bar - abhängig vom progress value
     const progressBar = detailsPage.querySelector("[data-project-info='progressBar']") as HTMLDivElement
     const progressContainer = detailsPage.querySelector("[data-project-info='progressContainer']") as HTMLDivElement
     if (progressBar && progressContainer) {
@@ -42,20 +42,22 @@ export class ProjectsManager {
       const progressRest = 100-progress
 
       if (progressBar && progressContainer) {
+        // Ausgangswert
+        progressBar.textContent = ""
+        progressContainer.textContent = ""
+        progressBar.style.width = progress.toFixed(0)+"%"
+        progressContainer.style.width = progressRest.toFixed(0)+"%"
+        progressBar.style.backgroundColor = "rgba(36, 218, 60, 0.795)"
+
+        // Darstellungsanpassung je nach Fortschritt
         if (progress >= 15 && progress <= 100) {
           progressBar.textContent = progress.toFixed(0)+"%"
-          progressBar.style.width = progress.toFixed(0)+"%"
-          progressContainer.textContent = ""
-          progressContainer.style.width = progressRest.toFixed(0)+"%"
-        } else if (1 <= progress && progress < 15) {
-          progressBar.textContent = ""
-          progressBar.style.width = progress.toFixed(0)+"%"
-          progressContainer.style.width = progressRest.toFixed(0)+"%"
+        } else if (2 <= progress && progress < 15) {
           progressContainer.textContent = progress.toFixed(0)+"%"
-        } else if (0 <= progress && progress < 1) {
-          progressBar.style.display = "none"
-          progressContainer.style.width = "100%"
-          progressContainer.style.borderRadius = "8px"
+        } else if (0 <= progress && progress < 2) {
+          progressBar.style.width = "2%"
+          progressBar.style.backgroundColor = "var(--primary-green-400)"
+          progressContainer.style.width = "98%"
           progressContainer.textContent = "0%"
         } else {
           console.log(`The project ${project.name} has an invalid progress value of: ${project.progress}`)
@@ -71,19 +73,13 @@ export class ProjectsManager {
       })
     }
 
-  //Function that handles all querys that occur once
+    //Function that handles all querys that occur once
     function updateDetailsPage(project, propertyList) {
       propertyList.forEach(property => {
         const attribute = `data-project-info='${property}'`
-        const element = detailsPage?.querySelector(`[${attribute}]`)
+        const element = detailsPage?.querySelector(`[${attribute}]`) as HTMLElement
 
-        if (element && project[property] && property!="finishDate") {
-          try {
-            element.textContent = project[property]
-          } catch (err) {
-            console.log(err, `The following property was causing issues: ${property}`)
-          }
-        } else if (element && project[property] && property==="finishDate") {
+        if (element && project[property] && property==="finishDate") {
           try {
             const date = project[property] as Date
             const newDate = date.toLocaleDateString('de-DE')
@@ -91,11 +87,24 @@ export class ProjectsManager {
           } catch (err) {
             console.log(err, `The following property was causing issues: ${property}`)
           }
-        }           
+        } else if (element && project[property] && property==="logoColor") {
+          try {
+            element.style.backgroundColor = project[property]
+          } catch (err) {
+            console.log(err, `The following property was causing issues: ${property}`)
+          }
+        } else if (element && project[property] && property!="finishDate") {
+          try {
+            element.textContent = project[property]
+          } catch (err) {
+            console.log(err, `The following property was causing issues: ${property}`)
+          }
+        }
       })}
     
     //List of properties to be iterated through (adaptable)
     const propertiesToUpdate = [
+      "logoColor",
       "acronym", 
       "description", 
       "projectStatus", 
@@ -114,7 +123,7 @@ export class ProjectsManager {
       description: "Project description goes here..." as string,
       businessUnit: "Transportation" as BusinessUnit,
       projectStatus: "Finished" as ProjectStatus,
-      finishDate: new Date(10 - 12 - 2023),
+      finishDate: new Date("") as Date,
       progress: 10 as number,
     }
     this.newProject(data)
