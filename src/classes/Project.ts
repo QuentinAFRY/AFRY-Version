@@ -35,8 +35,9 @@ export class Project implements IProject {
       this[key] = data[key]
     }
 
-    // Wenn kein datum angegeben wird, dann wird der heutige Tag als finishDate genommen
-    if (isNaN(this.finishDate.getDate())) {this.finishDate = new Date()}
+    // Heutiger Tag als finishDate wenn kein Datum angegeben & Falls Datum ein string (z.B. durch JSON) Konvertiertung in DateObject
+    if (typeof this.finishDate == "string") {this.finishDate = new Date(this.finishDate)}
+    if (this.finishDate instanceof Date && isNaN(this.finishDate.getDate())) {this.finishDate = new Date()}
 
     if (!this.id) {this.id = uuidv4()}
 
@@ -84,16 +85,13 @@ export class Project implements IProject {
       
       // Überprüft den Farbunterschied zur Hintergrundfarbe
       let difference = (Math.max(64, red)-Math.min(64, red))+(Math.max(80, green)-Math.min(80, green))+(Math.max(64, blue)-Math.min(64, blue))
-      console.log(`${difference}`)
       if (difference<100) {continue}
       
       // Berechne die Helligkeitskomponente (wenn kleiner 128, schlecht lesbar mit weißem text)
       brightness = 280-(0.3*red + 0.587*green + 0.3*blue);
-      console.log(`brightness: "${brightness}"`)
 
      // Gib die RGB-Farbe zurück
       color = `rgb(${red}, ${green}, ${blue})`
-      console.log(`red: "${red}", green: "${green}", blue: "${blue}"`)
     }
 
     this.logoColor = color

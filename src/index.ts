@@ -1,6 +1,12 @@
 import { IProject, BusinessUnit, ProjectStatus } from "./classes/Project";
 import { ProjectsManager } from "./classes/ProjectsManager";
 
+const projectsListUI = document.getElementById("projects-list") as HTMLElement;
+const projectsManager = new ProjectsManager(projectsListUI);
+
+const defaultProject = projectsManager.defaultProject;
+defaultProject();
+
 function toggleModal(id: string) {
   const modal = document.getElementById(id);
   if (modal && modal instanceof HTMLDialogElement) {
@@ -10,28 +16,34 @@ function toggleModal(id: string) {
   }
 }
 
-const projectsListUI = document.getElementById("projects-list") as HTMLElement;
-const projectsManager = new ProjectsManager(projectsListUI);
+const newProjectBtn = document.getElementById("new-project-btn") as HTMLButtonElement
+newProjectBtn? newProjectBtn.addEventListener("click", () => {
+    toggleModal("new-project-modal")})
+    :console.warn("New projects button was not found...")
 
-const newProjectBtn = document.getElementById("new-project-btn");
-if (newProjectBtn) {
-  newProjectBtn.addEventListener("click", () => {
-    toggleModal("new-project-modal");
-  });
+
+const editProjectBtn = document.getElementById("edit-project-button") as HTMLButtonElement
+const editProjectForm = document.getElementById("edit-project-form") as HTMLFormElement;
+if (editProjectBtn) {
+  const formData = new FormData(editProjectForm)
+
+  editProjectBtn.addEventListener("click", () => {
+    toggleModal("edit-project-modal")
+
+  })
 } else {
-  console.warn("New projects button was not found...");
+  console.warn("Edit projects button was not found...")
 }
 
-const defaultProject = projectsManager.defaultProject;
-defaultProject();
 
-const projectForm = document.getElementById("new-project-form") as HTMLFormElement;
+// Neues Projekt erstellen
+const newProjectForm = document.getElementById("new-project-form") as HTMLFormElement;
 const cancelProjectBtn = document.getElementById("cancel-project-btn") as HTMLButtonElement;
 
-if (projectForm && projectForm instanceof HTMLFormElement) {
-  projectForm.addEventListener("submit", (e) => {
+if (newProjectForm && newProjectForm instanceof HTMLFormElement) {
+  newProjectForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    const formData = new FormData(projectForm);
+    const formData = new FormData(newProjectForm);
 
     const projectData: IProject = {
       acronym: formData.get("acronym") as string,
@@ -46,7 +58,7 @@ if (projectForm && projectForm instanceof HTMLFormElement) {
     try {
       const project = projectsManager.newProject(projectData);
       toggleModal("new-project-modal");
-      projectForm.reset();
+      newProjectForm.reset();
       console.log(project);
     } catch (err) {
       toggleModal("error-dialog")
@@ -68,6 +80,10 @@ if (projectForm && projectForm instanceof HTMLFormElement) {
 } else {
   console.warn("The project form was not found. Check the ID!");
 }
+
+// Projekt Editieren
+const cancelProjectEditBtn = document.getElementById("cancel-project-edit-btn") as HTMLButtonElement;
+
 
 const exportProjectsBtn = document.getElementById("export-projects-btn")
 if (exportProjectsBtn) {
@@ -97,7 +113,7 @@ if (sidebarProjectsBtn) {
       return
     } else {
       detailsPage.style.display = "none"
-    projectsPage.style.display = "flex"
+      projectsPage.style.display = "flex"
     }
   })
 }

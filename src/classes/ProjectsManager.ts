@@ -24,6 +24,7 @@ export class ProjectsManager {
       projectsPage.style.display = "none"
       detailsPage.style.display = "flex"
       this.setDetailsPage(project)
+      console.log(this.list)
     })
     this.ui.append(project.ui)
     this.list.push(project)
@@ -129,6 +130,8 @@ export class ProjectsManager {
     this.newProject(data)
   }
 
+  getProjectData(data: IProject) {}
+
   getProject(id: string) {
     const project = this.list.find((project) => project.id === id)
     return project
@@ -181,8 +184,10 @@ export class ProjectsManager {
 
     reader.addEventListener('load', () => {
       const json = reader.result
+      console.log("THIS IS JSON: ", json)
       if (!json) {return}
       const newProjects: IProject[] = JSON.parse(json as string)
+      console.log("THIS IS parsedJSON: ", newProjects)
       const existingProjects = this.list.map((project) => {
         return project.name})
 
