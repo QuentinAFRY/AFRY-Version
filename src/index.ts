@@ -16,6 +16,21 @@ function toggleModal(id: string) {
   }
 }
 
+function getFormData(form: HTMLFormElement) {
+  const formData = new FormData(form);
+
+  const projectData: IProject = {
+    acronym: formData.get("acronym") as string,
+    name: formData.get("name") as string,
+    description: String(formData.get("description") || "...add a project description"),
+    businessUnit: formData.get("businessUnit") as BusinessUnit,
+    projectStatus: formData.get("projectStatus") as ProjectStatus,
+    finishDate: new Date(formData.get("finishDate") as string),
+    progress: Number(formData.get("progress") ?? 0)
+  }
+  return projectData
+}
+
 const newProjectBtn = document.getElementById("new-project-btn") as HTMLButtonElement
 newProjectBtn? newProjectBtn.addEventListener("click", () => {
     toggleModal("new-project-modal")})
@@ -23,18 +38,51 @@ newProjectBtn? newProjectBtn.addEventListener("click", () => {
 
 
 const editProjectBtn = document.getElementById("edit-project-button") as HTMLButtonElement
-const editProjectForm = document.getElementById("edit-project-form") as HTMLFormElement;
+const editProjectForm = document.getElementById("edit-project-form") as HTMLFormElement
+
 if (editProjectBtn) {
-  const formData = new FormData(editProjectForm)
-
   editProjectBtn.addEventListener("click", () => {
+    const projectId = projectsManager.activeProjectId
+    const projectData = projectsManager.getProject(projectId)
+    console.log(projectData)
+    
+    editProjectForm.elements["acronym"].value = projectData?.acronym
+    editProjectForm.elements["name"].value = projectData?.name
+    editProjectForm.elements["description"].value = projectData?.description
+    editProjectForm.elements["businessUnit"].value = projectData?.businessUnit
+    editProjectForm.elements["projectStatus"].value = projectData?.projectStatus
+    editProjectForm.elements["progress"].value = projectData?.progress
+    if (projectData?.finishDate instanceof Date) {
+      editProjectForm.elements["finishDate"].value = projectData?.finishDate.toISOString().split('T')[0]
+    }
     toggleModal("edit-project-modal")
-
   })
 } else {
   console.warn("Edit projects button was not found...")
 }
 
+if (editProjectForm && editProjectForm instanceof HTMLFormElement) {
+  editProjectForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const formData = getFormData(editProjectForm)
+    const projectId = projectsManager.activeProjectId
+    const project = projectsManager.getProject(projectId)
+
+    console.log("1",formData)
+    console.log("2", projectId)
+    console.log("3", project)
+
+    try {
+      projectsManager.updateProjectData(project, formData)
+      project?.updateUI()
+      toggleModal("edit-project-modal");
+      editProjectForm.reset();
+    } catch (err) {
+      toggleModal("error-dialog")
+      const errorMessage = document.getElementById("error-message") as HTMLParagraphElement
+      errorMessage.textContent = err
+    }
+  })}
 
 // Neues Projekt erstellen
 const newProjectForm = document.getElementById("new-project-form") as HTMLFormElement;
@@ -43,17 +91,7 @@ const cancelProjectBtn = document.getElementById("cancel-project-btn") as HTMLBu
 if (newProjectForm && newProjectForm instanceof HTMLFormElement) {
   newProjectForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    const formData = new FormData(newProjectForm);
-
-    const projectData: IProject = {
-      acronym: formData.get("acronym") as string,
-      name: formData.get("name") as string,
-      description: formData.get("description") as string,
-      businessUnit: formData.get("businessUnit") as BusinessUnit,
-      projectStatus: formData.get("projectStatus") as ProjectStatus,
-      finishDate: new Date(formData.get("finishDate") as string),
-      progress: Number(formData.get("progress") ?? 0),
-    };
+    const projectData = getFormData(newProjectForm)
 
     try {
       const project = projectsManager.newProject(projectData);
@@ -80,10 +118,6 @@ if (newProjectForm && newProjectForm instanceof HTMLFormElement) {
 } else {
   console.warn("The project form was not found. Check the ID!");
 }
-
-// Projekt Editieren
-const cancelProjectEditBtn = document.getElementById("cancel-project-edit-btn") as HTMLButtonElement;
-
 
 const exportProjectsBtn = document.getElementById("export-projects-btn")
 if (exportProjectsBtn) {

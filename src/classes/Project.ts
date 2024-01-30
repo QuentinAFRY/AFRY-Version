@@ -43,7 +43,7 @@ export class Project implements IProject {
 
     //Wenn der Name aus weniger als 5 Zeichen besteht, dann wird ein Error erstellt 
     if (this.name.length<5) {throw new Error(`The name "${this.name}" is invalid. Name must contain at least 5 characters`)}
-    
+
     this.setLogoColor()
     this.setAcronym()
     this.setUI()
@@ -103,6 +103,7 @@ export class Project implements IProject {
 
     this.ui = document.createElement("div")
     this.ui.className = "project-card"
+    this.ui.id = `project-card-${this.id}`
     this.ui.innerHTML = `
     <div class="card-header">
       <div class="card-logo" style="background-color: ${this.logoColor}">
@@ -135,5 +136,48 @@ export class Project implements IProject {
         <p>${(this.progress).toFixed(0)}%</p>
       </div>
     </div>`
+  }
+
+  updateUI() {
+    if (this.ui && this.ui instanceof HTMLDivElement) {
+      this.ui.innerHTML = `
+      <div class="card-header">
+        <div class="card-logo" style="background-color: ${this.logoColor}">
+          <p>${this.acronym}</p>
+        </div>
+        <div>
+          <h5>${this.name}</h5>
+          <p>${this.description}</p>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-property">
+          <p style="color: #969696">Status</p>
+          <p>${this.projectStatus}</p>
+        </div>
+        <div class="card-property">
+          <p style="color: #969696">Business Unit</p>
+          <p>${this.businessUnit}</p>
+        </div>
+        <div class="card-property">
+          <p style="color: #969696">Cost</p>
+          <p>$${this.cost}</p>
+        </div>
+        <div class="card-property">
+          <p style="color: #969696">Contact Person</p>
+          <a href="#">Quentin Hamm</a>
+        </div>
+        <div class="card-property">
+          <p style="color: #969696">Estimated Progress</p>
+          <p>${(this.progress).toFixed(0)}%</p>
+        </div>
+      </div>`
+    }
+  }
+
+  updateProjectData (data: IProject) {
+    for (const key in data) {
+      this[key] = data[key]
+    }
   }
 }
