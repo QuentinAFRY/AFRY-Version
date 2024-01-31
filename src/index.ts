@@ -18,6 +18,8 @@ function toggleModal(id: string) {
 
 function getFormData(form: HTMLFormElement) {
   const formData = new FormData(form);
+  const formDate = new Date(formData.get("finishDate") as string)
+ 
 
   const projectData: IProject = {
     acronym: formData.get("acronym") as string,
@@ -25,7 +27,7 @@ function getFormData(form: HTMLFormElement) {
     description: String(formData.get("description") || "...add a project description"),
     businessUnit: formData.get("businessUnit") as BusinessUnit,
     projectStatus: formData.get("projectStatus") as ProjectStatus,
-    finishDate: new Date(formData.get("finishDate") as string),
+    finishDate:  isNaN(formDate.getDate())? new Date() : formDate,
     progress: Number(formData.get("progress") ?? 0)
   }
   return projectData
@@ -37,6 +39,10 @@ newProjectBtn? newProjectBtn.addEventListener("click", () => {
     :console.warn("New projects button was not found...")
 
 
+
+
+
+// ------------------->> Comment on this
 const editProjectBtn = document.getElementById("edit-project-button") as HTMLButtonElement
 const editProjectForm = document.getElementById("edit-project-form") as HTMLFormElement
 
@@ -83,6 +89,12 @@ if (editProjectForm && editProjectForm instanceof HTMLFormElement) {
       errorMessage.textContent = err
     }
   })}
+
+
+
+
+
+
 
 // Neues Projekt erstellen
 const newProjectForm = document.getElementById("new-project-form") as HTMLFormElement;

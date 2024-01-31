@@ -97,9 +97,6 @@ export class ProjectsManager {
       propertyList.forEach(property => {
         const attribute = `data-project-info='${property}'`
         const element = detailsPage?.querySelector(`[${attribute}]`) as HTMLElement
-
-        
-        
         if (element && project[property]) {
           try {
             element.textContent = project[property]
@@ -109,7 +106,6 @@ export class ProjectsManager {
           }
         }
       })}
-    
     //List of properties to be iterated through (adaptable)
     const propertiesToUpdate = [
       "acronym", 
@@ -118,7 +114,6 @@ export class ProjectsManager {
       "businessUnit", 
       "contactPerson", 
     ]
-
     updateDetailsPage(project, propertiesToUpdate)
   }
 
@@ -129,15 +124,17 @@ export class ProjectsManager {
       description: "Project description goes here..." as string,
       businessUnit: "Transportation" as BusinessUnit,
       projectStatus: "Finished" as ProjectStatus,
-      finishDate: new Date("") as Date,
-      progress: 10 as number,
+      finishDate: new Date(),
+      progress: 20 as number,
     }
     this.newProject(data)
   }
 
+
+  // ------------------->> Comment on this
   updateProjectData(project, newData: Partial<Project>) {
     for (const key in newData) {
-      if (newData.hasOwnProperty(key)) {
+      if (newData.hasOwnProperty(key) && project[key]) {
         project[key] = newData[key]
       }
     }
