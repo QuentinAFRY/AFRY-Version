@@ -129,9 +129,7 @@ export class ProjectsManager {
     }
     this.newProject(data)
   }
-
-
-  // ------------------->> Comment on this
+  
   updateProjectData(project, newData: Partial<Project>) {
     for (const key in newData) {
       if (newData.hasOwnProperty(key) && project[key]) {
