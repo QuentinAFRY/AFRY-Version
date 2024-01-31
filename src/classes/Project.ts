@@ -34,15 +34,10 @@ export class Project implements IProject {
     for (const key in data) {
       this[key] = data[key]
     }
-
-    // Wenn kein datum angegeben wird, dann wird der heutige Tag als finishDate genommen
-    if (isNaN(this.finishDate.getDate())) {this.finishDate = new Date()}
-
-    if (!this.id) {this.id = uuidv4()}
-
-    //Wenn der Name aus weniger als 5 Zeichen besteht, dann wird ein Error erstellt 
+    if (typeof this.finishDate == "string") {this.finishDate = new Date(this.finishDate)}
+    if (this.finishDate instanceof Date && isNaN(this.finishDate.getDate())) {this.finishDate = new Date()}
     if (this.name.length<5) {throw new Error(`The name "${this.name}" is invalid. Name must contain at least 5 characters`)}
-    
+    if (!this.id) {this.id = uuidv4()}
     this.setLogoColor()
     this.setAcronym()
     this.setUI()
@@ -53,7 +48,6 @@ export class Project implements IProject {
     if (!this.acronym) {
       const name = this.name
       const nameParts = name.split(' ')
-
       if (nameParts[0].length<4) {
         const length = nameParts[0].length as number
         const restLength = 4-length
@@ -76,35 +70,27 @@ export class Project implements IProject {
     let color = ``
 
     for (let brightness = 0; brightness<126;) {
-
        // Generiere zufällige RGB-Werte
       const red = getRandomValue()
       const green = getRandomValue()
       const blue = getRandomValue()
-      
       // Überprüft den Farbunterschied zur Hintergrundfarbe
       let difference = (Math.max(64, red)-Math.min(64, red))+(Math.max(80, green)-Math.min(80, green))+(Math.max(64, blue)-Math.min(64, blue))
-      console.log(`${difference}`)
       if (difference<100) {continue}
-      
       // Berechne die Helligkeitskomponente (wenn kleiner 128, schlecht lesbar mit weißem text)
       brightness = 280-(0.3*red + 0.587*green + 0.3*blue);
-      console.log(`brightness: "${brightness}"`)
-
      // Gib die RGB-Farbe zurück
       color = `rgb(${red}, ${green}, ${blue})`
-      console.log(`red: "${red}", green: "${green}", blue: "${blue}"`)
     }
-
     this.logoColor = color
   }
 
   //creates the project card UI
   setUI() {
     if (this.ui && this.ui instanceof HTMLDivElement) {return}
-
     this.ui = document.createElement("div")
     this.ui.className = "project-card"
+    this.ui.id = `project-card-${this.id}`
     this.ui.innerHTML = `
     <div class="card-header">
       <div class="card-logo" style="background-color: ${this.logoColor}">
@@ -137,5 +123,43 @@ export class Project implements IProject {
         <p>${(this.progress).toFixed(0)}%</p>
       </div>
     </div>`
+  }
+
+  // updates the UI in case of editing the project
+  updateUI() {
+    if (this.ui && this.ui instanceof HTMLDivElement) {
+      this.ui.innerHTML = `
+      <div class="card-header">
+        <div class="card-logo" style="background-color: ${this.logoColor}">
+          <p>${this.acronym}</p>
+        </div>
+        <div>
+          <h5>${this.name}</h5>
+          <p>${this.description}</p>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-property">
+          <p style="color: #969696">Status</p>
+          <p>${this.projectStatus}</p>
+        </div>
+        <div class="card-property">
+          <p style="color: #969696">Business Unit</p>
+          <p>${this.businessUnit}</p>
+        </div>
+        <div class="card-property">
+          <p style="color: #969696">Cost</p>
+          <p>$${this.cost}</p>
+        </div>
+        <div class="card-property">
+          <p style="color: #969696">Contact Person</p>
+          <a href="#">Quentin Hamm</a>
+        </div>
+        <div class="card-property">
+          <p style="color: #969696">Estimated Progress</p>
+          <p>${(this.progress).toFixed(0)}%</p>
+        </div>
+      </div>`
+    }
   }
 }

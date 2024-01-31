@@ -3,6 +3,7 @@ import { IProject, Project, BusinessUnit, ProjectStatus } from "./Project"
 export class ProjectsManager {
   list: Project[] = []
   ui: HTMLElement
+  activeProjectId: string
 
   constructor(container: HTMLElement) {
     this.ui = container
@@ -24,6 +25,7 @@ export class ProjectsManager {
       projectsPage.style.display = "none"
       detailsPage.style.display = "flex"
       this.setDetailsPage(project)
+      this.setActiveProjectId(project.id)
     })
     this.ui.append(project.ui)
     this.list.push(project)
@@ -75,44 +77,43 @@ export class ProjectsManager {
 
     //Function that handles all querys that occur once
     function updateDetailsPage(project, propertyList) {
+
+      const dateElement = detailsPage?.querySelector(`[data-project-info='finishDate']`) as HTMLElement
+      try {
+        const date = project.finishDate as Date
+        const newDate = date.toLocaleDateString('de-DE')
+        dateElement.textContent = newDate
+      } catch (err) {
+        console.log(err, `The finishDate was causing issues: "${project.finishDate}"`)
+      }
+
+      const logoElement = detailsPage?.querySelector(`[data-project-info='logoColor']`) as HTMLElement
+      try {
+        logoElement.style.backgroundColor = project.logoColor
+      } catch (err) {
+        console.log(err, `The logoColor was causing issues: "${project.logoColor}"`)
+      }
+
       propertyList.forEach(property => {
         const attribute = `data-project-info='${property}'`
         const element = detailsPage?.querySelector(`[${attribute}]`) as HTMLElement
-
-        if (element && project[property] && property==="finishDate") {
-          try {
-            const date = project[property] as Date
-            const newDate = date.toLocaleDateString('de-DE')
-            element.textContent = newDate
-          } catch (err) {
-            console.log(err, `The following property was causing issues: ${property}`)
-          }
-        } else if (element && project[property] && property==="logoColor") {
-          try {
-            element.style.backgroundColor = project[property]
-          } catch (err) {
-            console.log(err, `The following property was causing issues: ${property}`)
-          }
-        } else if (element && project[property] && property!="finishDate") {
+        if (element && project[property]) {
           try {
             element.textContent = project[property]
+            console.log(project[property])
           } catch (err) {
             console.log(err, `The following property was causing issues: ${property}`)
           }
         }
       })}
-    
     //List of properties to be iterated through (adaptable)
     const propertiesToUpdate = [
-      "logoColor",
       "acronym", 
       "description", 
       "projectStatus", 
       "businessUnit", 
       "contactPerson", 
-      "finishDate",
     ]
-
     updateDetailsPage(project, propertiesToUpdate)
   }
 
@@ -123,10 +124,23 @@ export class ProjectsManager {
       description: "Project description goes here..." as string,
       businessUnit: "Transportation" as BusinessUnit,
       projectStatus: "Finished" as ProjectStatus,
-      finishDate: new Date("") as Date,
-      progress: 10 as number,
+      finishDate: new Date(),
+      progress: 20 as number,
     }
     this.newProject(data)
+  }
+  
+  updateProjectData(project, newData: Partial<Project>) {
+    for (const key in newData) {
+      if (newData.hasOwnProperty(key) && project[key]) {
+        project[key] = newData[key]
+      }
+    }
+    this.setDetailsPage(project)
+  }
+
+  setActiveProjectId (id: string) {
+    this.activeProjectId = id
   }
 
   getProject(id: string) {
@@ -181,8 +195,10 @@ export class ProjectsManager {
 
     reader.addEventListener('load', () => {
       const json = reader.result
+      console.log("THIS IS JSON: ", json)
       if (!json) {return}
       const newProjects: IProject[] = JSON.parse(json as string)
+      console.log("THIS IS parsedJSON: ", newProjects)
       const existingProjects = this.list.map((project) => {
         return project.name})
 

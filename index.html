@@ -177,6 +177,115 @@
       </div>
       <!-- Project Details Page -->
       <div class="page" id="project-details" style="display: none">
+        <dialog id="edit-project-modal">
+          <form id="edit-project-form">
+            <h3>Edit Project</h3>
+            <div class="dialog-container">
+              <div class="form-field-container">
+                <label
+                  ><span class="material-icons-sharp"> apartment </span>Project
+                  name</label
+                >
+                <input
+                  name="name"
+                  type="text"
+                  placeholder="What's the name of your project?"
+                />
+                <p
+                  style="
+                    color: gray;
+                    font-size: var(--font-sm);
+                    margin-top: 5px;
+                    font-style: italic;
+                  "
+                >
+                  TIP: Give it a short name
+                </p>
+                <label style="margin-top: 10px;"
+                  ><span class="material-icons-sharp"> abc </span>Project
+                  acronym </label
+                >
+                <input
+                  name="acronym"
+                  type="text"
+                  placeholder="Choose an acronym of 4 letters"
+                />
+              </div>
+              <div class="form-field-container">
+                <label
+                  ><span class="material-icons-sharp"> density_small </span
+                  >Description</label
+                >
+                <textarea
+                  name="description"
+                  cols="30"
+                  rows="5"
+                  placeholder="Give your project a nice description! So people is jealous about it."
+                ></textarea>
+              </div>
+              <div class="form-field-container">
+                <label
+                  ><span class="material-icons-sharp"> manage_accounts </span
+                  >Business Unit</label
+                >
+                <select name="businessUnit">
+                  <option>none</option>
+                  <option>Transportation</option>
+                  <option>Sustainability</option>
+                  <option>Energy</option>
+                  <option>Industrial</option>
+                </select>
+              </div>
+              <div class="form-field-container">
+                <label
+                  ><span class="material-icons-sharp"> task_alt </span
+                  >Status</label
+                >
+                <select name="projectStatus">
+                  <option>Pending</option>
+                  <option>Active</option>
+                  <option>Finished</option>
+                </select>
+              </div>
+              <div class="form-field-container">
+                <label for="finishDate">
+                  <span class="material-icons-sharp"> calendar_month </span>
+                  Finish Date
+                </label>
+                <input name="finishDate" type="date"/>
+              </div>
+              <div class="form-field-container">
+                <label
+                  ><span class="material-icons-sharp"> hourglass-bottom </span>Project
+                  progress (%) </label
+                >
+                <input
+                  name="progress"
+                  type="number"
+                  min="0"
+                  max="100"
+                  placeholder="Specify the current progress"
+                />
+              </div>
+              <div class="form-button-container">
+                <button
+                  type="button"
+                  class="form-cancel-btn"
+                  id="cancel-project-edit-btn"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  class="form-accept-btn"
+                  id="accept-project-edit-btn"
+                >
+                  Accept
+                </button>
+              </div>
+            </div>
+          </form>
+        </dialog>
         <header>
           <div>
             <h2 data-project-info="name">Empty</h2>
@@ -194,7 +303,7 @@
                 >
                   <p data-project-info="acronym"></p>
                 </div>
-                <button>
+                <button id="edit-project-button">
                   <span style="scale: 0.7" class="material-icons-sharp">
                     edit </span
                   >Edit
@@ -208,10 +317,10 @@
                   Kosten und Emissionen.
                 </p>
               </div>
-              <div style="display:  grid; grid-template-columns: 40px 90px 95px 75px;">
+              <div style="display:  grid; grid-template-columns: 55px 90px 95px 65px;">
                 <div>
                   <p style="color: var(--primary-grey-300)">Status</p>
-                  <p data-project-info="status">Active</p>
+                  <p data-project-info="projectStatus">Active</p>
                 </div>
                 <div>
                   <p style="color: var(--primary-grey-300)">Business Unit</p>
