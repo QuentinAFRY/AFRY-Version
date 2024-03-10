@@ -1,5 +1,6 @@
 import { IProject, BusinessUnit, ProjectStatus } from "./classes/Project";
 import { ProjectsManager } from "./classes/ProjectsManager";
+import { IProjectTask, TaskLogo, TaskStatus } from "./classes/ProjectTask";
 
 const projectsListUI = document.getElementById("projects-list") as HTMLElement;
 const projectsManager = new ProjectsManager(projectsListUI);
@@ -16,7 +17,7 @@ function toggleModal(id: string) {
   }
 }
 
-function getFormData(form: HTMLFormElement) {
+function getProjectFormData(form: HTMLFormElement) {
   const formData = new FormData(form);
   const formDate = new Date(formData.get("finishDate") as string)
  
@@ -33,104 +34,41 @@ function getFormData(form: HTMLFormElement) {
   return projectData
 }
 
-const newProjectBtn = document.getElementById("new-project-btn") as HTMLButtonElement
-newProjectBtn? newProjectBtn.addEventListener("click", () => {
-    toggleModal("new-project-modal")})
-    :console.warn("New projects button was not found...")
+function getTaskFormData(form: HTMLFormElement) {
+  const formData = new FormData(form);
+  const formDate = new Date(formData.get("finishDate") as string)
+  let competenceArea: TaskLogo = "construction"
 
+  switch(formData.get("taskLogo") as string) {
+    case "Engineering":
+      competenceArea="construction"
+      break
+    case "BIM":
+      competenceArea="view_in_ar"
+      break
+    case "Documentation":
+      competenceArea="description"
+      break
+    case "Sustainability":
+      competenceArea="compost"
+      break
+  }
+ 
 
+  const taskData: IProjectTask = {
+    name: formData.get("name") as string,
+    description: formData.get("description") as string || undefined,
+    taskLogo: competenceArea,
+    creationDate: new Date(),
+    finishDate: isNaN(formDate.getDate())? undefined : formDate,
+    taskStatus: "open"
+  }
 
-
-
-// ------------------->> Comment on this
-const editProjectBtn = document.getElementById("edit-project-button") as HTMLButtonElement
-const editProjectForm = document.getElementById("edit-project-form") as HTMLFormElement
-
-if (editProjectBtn) {
-  editProjectBtn.addEventListener("click", () => {
-    const projectId = projectsManager.activeProjectId
-    const projectData = projectsManager.getProject(projectId)
-    console.log(projectData)
-    
-    editProjectForm.elements["acronym"].value = projectData?.acronym
-    editProjectForm.elements["name"].value = projectData?.name
-    editProjectForm.elements["description"].value = projectData?.description
-    editProjectForm.elements["businessUnit"].value = projectData?.businessUnit
-    editProjectForm.elements["projectStatus"].value = projectData?.projectStatus
-    editProjectForm.elements["progress"].value = projectData?.progress
-    if (projectData?.finishDate instanceof Date) {
-      editProjectForm.elements["finishDate"].value = projectData?.finishDate.toISOString().split('T')[0]
-    }
-    toggleModal("edit-project-modal")
-  })
-} else {
-  console.warn("Edit projects button was not found...")
+  console.log(taskData)
+  return taskData
 }
 
-if (editProjectForm && editProjectForm instanceof HTMLFormElement) {
-  editProjectForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const formData = getFormData(editProjectForm)
-    const projectId = projectsManager.activeProjectId
-    const project = projectsManager.getProject(projectId)
-
-    console.log("1",formData)
-    console.log("2", projectId)
-    console.log("3", project)
-
-    try {
-      projectsManager.updateProjectData(project, formData)
-      project?.updateUI()
-      toggleModal("edit-project-modal");
-      editProjectForm.reset();
-    } catch (err) {
-      toggleModal("error-dialog")
-      const errorMessage = document.getElementById("error-message") as HTMLParagraphElement
-      errorMessage.textContent = err
-    }
-  })}
-
-
-
-
-
-
-
-// Neues Projekt erstellen
-const newProjectForm = document.getElementById("new-project-form") as HTMLFormElement;
-const cancelProjectBtn = document.getElementById("cancel-project-btn") as HTMLButtonElement;
-
-if (newProjectForm && newProjectForm instanceof HTMLFormElement) {
-  newProjectForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const projectData = getFormData(newProjectForm)
-
-    try {
-      const project = projectsManager.newProject(projectData);
-      toggleModal("new-project-modal");
-      newProjectForm.reset();
-      console.log(project);
-    } catch (err) {
-      toggleModal("error-dialog")
-      const errorMessage = document.getElementById("error-message") as HTMLParagraphElement
-      errorMessage.textContent = err
-    }
-  });
-
-  const errorBtn = document.getElementById("error-dialog-btn") as HTMLButtonElement
-  errorBtn?.addEventListener("click", (e) => {
-    e.preventDefault();
-    toggleModal("error-dialog");
-  })
-
-  cancelProjectBtn?.addEventListener("click", (e) => {
-    e.preventDefault();
-    toggleModal("new-project-modal");
-  });
-} else {
-  console.warn("The project form was not found. Check the ID!");
-}
-
+// Projects overwiew - Functionalities
 const exportProjectsBtn = document.getElementById("export-projects-btn")
 if (exportProjectsBtn) {
   exportProjectsBtn.addEventListener("click", (e) => {
@@ -163,3 +101,132 @@ if (sidebarProjectsBtn) {
     }
   })
 }
+
+
+// Neues Projekt erstellen
+
+const newProjectBtn = document.getElementById("new-project-btn") as HTMLButtonElement
+newProjectBtn? newProjectBtn.addEventListener("click", () => {
+    toggleModal("new-project-modal")})
+    :console.warn("New projects button was not found...")
+
+const newProjectForm = document.getElementById("new-project-form") as HTMLFormElement;
+const cancelProjectBtn = document.getElementById("cancel-project-btn") as HTMLButtonElement;
+
+if (newProjectForm && newProjectForm instanceof HTMLFormElement) {
+  newProjectForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const projectData = getProjectFormData(newProjectForm)
+
+    try {
+      const project = projectsManager.newProject(projectData);
+      toggleModal("new-project-modal");
+      newProjectForm.reset();
+      console.log(project);
+    } catch (err) {
+      toggleModal("error-dialog")
+      const errorMessage = document.getElementById("error-message") as HTMLParagraphElement
+      errorMessage.textContent = err
+    }
+  });
+
+  const errorBtn = document.getElementById("error-dialog-btn") as HTMLButtonElement
+  errorBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    toggleModal("error-dialog");
+  })
+
+  cancelProjectBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    toggleModal("new-project-modal");
+  });
+} else {
+  console.warn("The project form was not found. Check the ID!");
+}
+
+
+// Edit Project in the Details Page
+const editProjectBtn = document.getElementById("edit-project-button") as HTMLButtonElement
+const editProjectForm = document.getElementById("edit-project-form") as HTMLFormElement
+
+if (editProjectBtn) {
+  editProjectBtn.addEventListener("click", () => {
+    const projectId = projectsManager.activeProjectId
+    const projectData = projectsManager.getProject(projectId)
+    console.log(projectData)
+    
+    editProjectForm.elements["acronym"].value = projectData?.acronym
+    editProjectForm.elements["name"].value = projectData?.name
+    editProjectForm.elements["description"].value = projectData?.description
+    editProjectForm.elements["businessUnit"].value = projectData?.businessUnit
+    editProjectForm.elements["projectStatus"].value = projectData?.projectStatus
+    editProjectForm.elements["progress"].value = projectData?.progress
+    if (projectData?.finishDate instanceof Date) {
+      editProjectForm.elements["finishDate"].value = projectData?.finishDate.toISOString().split('T')[0]
+    }
+    toggleModal("edit-project-modal")
+  })
+} else {
+  console.warn("Edit projects button was not found...")
+}
+
+if (editProjectForm && editProjectForm instanceof HTMLFormElement) {
+  editProjectForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const formData = getProjectFormData(editProjectForm)
+    const projectId = projectsManager.activeProjectId
+    const project = projectsManager.getProject(projectId)
+
+    console.log("1",formData)
+    console.log("2", projectId)
+    console.log("3", project)
+
+    try {
+      projectsManager.updateProjectData(project, formData)
+      project?.updateUI()
+      toggleModal("edit-project-modal");
+      editProjectForm.reset();
+      console.log("1",formData)
+      console.log("2", projectId)
+      console.log("3", project)
+    } catch (err) {
+      toggleModal("error-dialog")
+      const errorMessage = document.getElementById("error-message") as HTMLParagraphElement
+      errorMessage.textContent = err
+    }
+  })}
+
+  // Adding and editing Tasks in Project Details
+
+  const addTaskBtn = document.getElementById("add-task-btn")
+  const taskContainer = document.getElementById("task-list") as HTMLDivElement
+  const taskModal = document.getElementById("task-modal")
+  const taskForm = document.getElementById("task-form") as HTMLFormElement
+
+  if (addTaskBtn && taskModal) {
+    addTaskBtn.addEventListener("click", () => {
+      toggleModal("task-modal")
+    })
+  }
+
+  if (taskForm && taskForm instanceof HTMLFormElement) {
+    taskForm.addEventListener("submit", (e) => {
+      e.preventDefault()
+      const taskFormData = getTaskFormData(taskForm)
+      const projectId = projectsManager.activeProjectId
+      const project = projectsManager.getProject(projectId)
+
+      if (project && taskFormData)
+        try {
+          project.newTask(taskFormData, taskContainer)
+          console.log(projectsManager.getProjectList())
+          toggleModal("task-modal");
+          taskForm.reset();
+          console.log("done");
+        } catch (err) {
+          toggleModal("error-dialog")
+          const errorMessage = document.getElementById("error-message") as HTMLParagraphElement
+          errorMessage.textContent = err
+        }
+    })
+  }

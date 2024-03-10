@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid"
+import { ProjectTask, IProjectTask, TaskStatus, TaskLogo } from "./ProjectTask";
 
 export type BusinessUnit = "none" | "transportation" | "sustainability" | "energy" | "Industrial"
 export type ProjectStatus = "pending" | "active" | "finished"
@@ -30,6 +31,8 @@ export class Project implements IProject {
   progress: number = 0.15
   contactPerson: string = "Quentin Hamm"
 
+  tasks: ProjectTask[] = []
+
   constructor(data: IProject) {
     for (const key in data) {
       this[key] = data[key]
@@ -38,6 +41,15 @@ export class Project implements IProject {
     if (this.finishDate instanceof Date && isNaN(this.finishDate.getDate())) {this.finishDate = new Date()}
     if (this.name.length<5) {throw new Error(`The name "${this.name}" is invalid. Name must contain at least 5 characters`)}
     if (!this.id) {this.id = uuidv4()}
+    if (this.tasks != undefined) {
+      const updateTasks = new Array
+      for (const object of this.tasks) {
+        const task = new ProjectTask(object)
+        updateTasks.push(task)
+      }
+      this.tasks = updateTasks
+      }
+
     this.setLogoColor()
     this.setAcronym()
     this.setUI()
@@ -161,5 +173,16 @@ export class Project implements IProject {
         </div>
       </div>`
     }
+  }
+
+  printTaskContainer() {
+    console.log(this.tasks)
+  }
+
+  newTask(data: IProjectTask, container: HTMLDivElement) {
+    const newTask = new ProjectTask(data)
+    const taskContainer = container
+    taskContainer.append(newTask.ui)
+    this.tasks.push(newTask)
   }
 }

@@ -9,6 +9,10 @@ export class ProjectsManager {
     this.ui = container
   }
 
+  getProjectList () {
+    return this.list
+  }
+  
   newProject(data: IProject) {
     const projectNames = this.list.map((project) => {
       return project.name
@@ -26,6 +30,7 @@ export class ProjectsManager {
       detailsPage.style.display = "flex"
       this.setDetailsPage(project)
       this.setActiveProjectId(project.id)
+      this.setDetailsPageTasks()
     })
     this.ui.append(project.ui)
     this.list.push(project)
@@ -117,6 +122,20 @@ export class ProjectsManager {
     updateDetailsPage(project, propertiesToUpdate)
   }
 
+  private setDetailsPageTasks() {
+    const detailsPage = document.getElementById("project-details")
+    if (!detailsPage) {return}
+
+    const taskList = document.getElementById("task-list") as HTMLDivElement
+    taskList.innerHTML = ``
+    const project = this.getProject(this.activeProjectId)
+    if (project && project.tasks != undefined) {
+      for (const task of project.tasks) {
+        taskList.append(task.ui)
+      }
+    }
+  }
+
   defaultProject = () => {
     const data: IProject = {
       name: "Example Project" as string,
@@ -134,6 +153,8 @@ export class ProjectsManager {
     for (const key in newData) {
       if (newData.hasOwnProperty(key) && project[key]) {
         project[key] = newData[key]
+        if (typeof newData.name =="string" && newData.name.length<5) {throw new Error(`The name "${newData.name}" is invalid. Name must contain at least 5 characters`)}
+        if (typeof newData.acronym =="string" && newData.acronym.length!=4) {throw new Error(`The acronym "${newData.acronym}" is invalid. It must consist of 4 letters`)}
       }
     }
     this.setDetailsPage(project)
