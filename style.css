@@ -28,6 +28,10 @@
   --primary-grey-300: #b2b2b2;
   --primary-grey-400: #d0d0d0;
   --primary-grey-500: #f8f8f8;
+  --task-open: #6e6e7d85;
+  --task-in-progress: #ffce4a85;
+  --task-finished: #36733d85;
+  --task-logo-back: #00000017;
 }
 
 /* Global Styles... */
@@ -284,25 +288,31 @@ select {
 
 .to-do-card {
   box-sizing: border-box;
+  color: var(--primary-beige);
   font-size: var(--font-style-XS);
-  background-color: var(--primary-black);
   padding: 10px;
   border-radius: 8px;
   width: 100%;
   display: grid;
-  grid-template-columns: 60px 1fr 80px;
+  grid-template-columns: 60px 1fr 60px;
   justify-content: space-between;
 }
 
 .to-do-logo-container {
-  background-color: var(--primary-green-300);
-  color: var(--primary-black);
-  width: 50px;
-  height: 50px;
+  background-color: var(--task-logo-back);
+  color: var(--primary-beige);
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 8px;
+}
+
+.to-do-date {
+  text-align: right;
+  font-style: italic;
+  align-self: center;
 }
 
 .to-do-card:hover {

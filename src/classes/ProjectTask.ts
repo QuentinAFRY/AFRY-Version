@@ -44,14 +44,31 @@ export class ProjectTask implements IProjectTask{
         this.ui = document.createElement("div")
         this.ui.className = "to-do-card"
         this.ui.id = `to-do-card"-${this.id}`
+
+        switch (this.taskStatus) {
+            case "open":
+                this.ui.style.backgroundColor = "var(--task-open)"; // Beispiel-Hintergrundfarbe für den Status "open"
+                break;
+            case "in-progress":
+                this.ui.style.backgroundColor = "var(--task-in-progress)"; // Beispiel-Hintergrundfarbe für den Status "inProgress"
+                break;
+            case "finished":
+                this.ui.style.backgroundColor = "task-finished"; // Beispiel-Hintergrundfarbe für den Status "closed"
+                break;
+            default:
+                this.ui.style.backgroundColor = "var(--task-open)"; // Standard-Hintergrundfarbe für unbekannte Status
+                break;
+        }
+
         this.ui.innerHTML = `
         <div class="to-do-logo-container">
-            <span class="material-icons-sharp" style="scale: 1.3">
+            <span class="material-icons-sharp" style="scale: 1.2">
                 ${this.taskLogo}
             </span>
         </div>
-        <p>${this.name}</p>
-        <p style="text-align: right; font-style: italic">
+        <p style="padding-right: 4px; align-self: center;">
+            ${this.name}</p>
+        <p class="to-do-date">
             ${this.creationDate.toLocaleDateString()}
         </p>
         `

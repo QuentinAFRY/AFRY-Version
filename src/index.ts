@@ -63,8 +63,7 @@ function getTaskFormData(form: HTMLFormElement) {
     finishDate: isNaN(formDate.getDate())? undefined : formDate,
     taskStatus: "open"
   }
-
-  console.log(taskData)
+  
   return taskData
 }
 
@@ -194,39 +193,39 @@ if (editProjectForm && editProjectForm instanceof HTMLFormElement) {
       const errorMessage = document.getElementById("error-message") as HTMLParagraphElement
       errorMessage.textContent = err
     }
-  })}
+})}
 
   // Adding and editing Tasks in Project Details
 
-  const addTaskBtn = document.getElementById("add-task-btn")
-  const taskContainer = document.getElementById("task-list") as HTMLDivElement
-  const taskModal = document.getElementById("task-modal")
-  const taskForm = document.getElementById("task-form") as HTMLFormElement
+const addTaskBtn = document.getElementById("add-task-btn")
+const taskContainer = document.getElementById("task-list") as HTMLDivElement
+const taskModal = document.getElementById("task-modal")
+const taskForm = document.getElementById("task-form") as HTMLFormElement
 
-  if (addTaskBtn && taskModal) {
-    addTaskBtn.addEventListener("click", () => {
-      toggleModal("task-modal")
-    })
-  }
+if (addTaskBtn && taskModal) {
+  addTaskBtn.addEventListener("click", () => {
+    toggleModal("task-modal")
+  })
+}
 
-  if (taskForm && taskForm instanceof HTMLFormElement) {
-    taskForm.addEventListener("submit", (e) => {
-      e.preventDefault()
-      const taskFormData = getTaskFormData(taskForm)
-      const projectId = projectsManager.activeProjectId
-      const project = projectsManager.getProject(projectId)
+if (taskForm && taskForm instanceof HTMLFormElement) {
+  taskForm.addEventListener("submit", (e) => {
+    e.preventDefault()
+    const taskFormData = getTaskFormData(taskForm)
+    const projectId = projectsManager.activeProjectId
+    const project = projectsManager.getProject(projectId)
 
-      if (project && taskFormData)
-        try {
-          project.newTask(taskFormData, taskContainer)
-          console.log(projectsManager.getProjectList())
-          toggleModal("task-modal");
-          taskForm.reset();
-          console.log("done");
-        } catch (err) {
-          toggleModal("error-dialog")
-          const errorMessage = document.getElementById("error-message") as HTMLParagraphElement
-          errorMessage.textContent = err
-        }
-    })
-  }
+    if (project && taskFormData)
+      try {
+        project.newTask(taskFormData, taskContainer)
+        console.log(projectsManager.getProjectList())
+        toggleModal("task-modal");
+        taskForm.reset();
+        console.log("done");
+      } catch (err) {
+        toggleModal("error-dialog")
+        const errorMessage = document.getElementById("error-message") as HTMLParagraphElement
+        errorMessage.textContent = err
+      }
+  })
+}
