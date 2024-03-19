@@ -12,6 +12,7 @@ export function toggleModal(id: string) {
   const modal = document.getElementById(id);
   if (modal && modal instanceof HTMLDialogElement) {
     modal.open? modal.close() : modal.showModal()
+    console.log(`The Modal ${modal} was toggled`)
   } else {
     console.warn("The provided modal wasn't found in the DOM. ID: ", id);
   }
@@ -67,6 +68,12 @@ function getTaskFormData(form: HTMLFormElement) {
   return taskData
 }
 
+export function errorPopUp(error: string) {
+  toggleModal("error-dialog")
+  const errorMessage = document.getElementById("error-message") as HTMLParagraphElement
+  errorMessage.textContent = error
+}
+
 // Projects overwiew - Functionalities
 const exportProjectsBtn = document.getElementById("export-projects-btn")
 if (exportProjectsBtn) {
@@ -78,7 +85,11 @@ if (exportProjectsBtn) {
 const importProjectsBtn = document.getElementById("import-projects-btn")
 if (importProjectsBtn) {
   importProjectsBtn.addEventListener("click", () => {
-  projectsManager.importFromJSON()
+    try {
+      projectsManager.importFromJSON()
+    } catch (err) {
+      errorPopUp(err)
+    }
   })
 }
 
@@ -110,7 +121,7 @@ newProjectBtn? newProjectBtn.addEventListener("click", () => {
     :console.warn("New projects button was not found...")
 
 const newProjectForm = document.getElementById("new-project-form") as HTMLFormElement;
-const cancelProjectBtn = document.getElementById("cancel-project-btn") as HTMLButtonElement;
+const cancelProjectAddBtn = document.getElementById("cancel-project-btn") as HTMLButtonElement;
 
 if (newProjectForm && newProjectForm instanceof HTMLFormElement) {
   newProjectForm.addEventListener("submit", (e) => {
@@ -123,11 +134,9 @@ if (newProjectForm && newProjectForm instanceof HTMLFormElement) {
       newProjectForm.reset();
       console.log(project);
     } catch (err) {
-      toggleModal("error-dialog")
-      const errorMessage = document.getElementById("error-message") as HTMLParagraphElement
-      errorMessage.textContent = err
+      errorPopUp(err)
     }
-  });
+  })
 
   const errorBtn = document.getElementById("error-dialog-btn") as HTMLButtonElement
   errorBtn?.addEventListener("click", (e) => {
@@ -135,10 +144,10 @@ if (newProjectForm && newProjectForm instanceof HTMLFormElement) {
     toggleModal("error-dialog");
   })
 
-  cancelProjectBtn?.addEventListener("click", (e) => {
+  cancelProjectAddBtn?.addEventListener("click", (e) => {
     e.preventDefault();
     toggleModal("new-project-modal");
-  });
+  })
 } else {
   console.warn("The project form was not found. Check the ID!");
 }
@@ -147,6 +156,8 @@ if (newProjectForm && newProjectForm instanceof HTMLFormElement) {
 // Edit Project in the Details Page
 const editProjectBtn = document.getElementById("edit-project-button") as HTMLButtonElement
 const editProjectForm = document.getElementById("edit-project-form") as HTMLFormElement
+
+const cancelProjectEditBtn = document.getElementById("cancel-project-edit-btn") as HTMLButtonElement;
 
 if (editProjectBtn) {
   editProjectBtn.addEventListener("click", () => {
@@ -165,6 +176,11 @@ if (editProjectBtn) {
     }
     toggleModal("edit-project-modal")
   })
+
+  cancelProjectEditBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    toggleModal("edit-project-modal");
+  })
 } else {
   console.warn("Edit projects button was not found...")
 }
@@ -176,22 +192,13 @@ if (editProjectForm && editProjectForm instanceof HTMLFormElement) {
     const projectId = projectsManager.activeProjectId
     const project = projectsManager.getProject(projectId)
 
-    console.log("1",formData)
-    console.log("2", projectId)
-    console.log("3", project)
-
     try {
       projectsManager.updateProjectData(project, formData)
       project?.updateUI()
       toggleModal("edit-project-modal");
       editProjectForm.reset();
-      console.log("1",formData)
-      console.log("2", projectId)
-      console.log("3", project)
     } catch (err) {
-      toggleModal("error-dialog")
-      const errorMessage = document.getElementById("error-message") as HTMLParagraphElement
-      errorMessage.textContent = err
+      errorPopUp(err)
     }
 })}
 
@@ -201,6 +208,8 @@ const addTaskBtn = document.getElementById("add-task-btn")
 const taskContainer = document.getElementById("task-list") as HTMLDivElement
 const taskModal = document.getElementById("task-modal")
 const taskForm = document.getElementById("task-form") as HTMLFormElement
+
+const cancelTaskAddBtn = document.getElementById("cancel-task-btn") as HTMLButtonElement;
 
 if (addTaskBtn && taskModal) {
   addTaskBtn.addEventListener("click", () => {
@@ -223,9 +232,12 @@ if (taskForm && taskForm instanceof HTMLFormElement) {
         taskForm.reset();
         console.log("done");
       } catch (err) {
-        toggleModal("error-dialog")
-        const errorMessage = document.getElementById("error-message") as HTMLParagraphElement
-        errorMessage.textContent = err
+        errorPopUp(err)
       }
+  })
+
+  cancelTaskAddBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    toggleModal("task-modal");
   })
 }

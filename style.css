@@ -28,7 +28,7 @@
   --primary-grey-300: #b2b2b2;
   --primary-grey-400: #d0d0d0;
   --primary-grey-500: #f8f8f8;
-  --task-open: #34343bf2;
+  --task-open: #535374f2;
   --task-in-progress: #ffce4a85;
   --task-finished: #36733d85;
   --task-logo-back: #00000017;
@@ -287,6 +287,8 @@ select {
   cursor: pointer;
 }
 
+/* Task animation - Edit and Delete */
+
 .to-do-card {
   background-color: var(--task-finished);
   box-sizing: border-box;
@@ -302,6 +304,23 @@ select {
   grid-template-columns: 60px 1fr 80px;
   justify-content: space-between;
   padding: 10px 0;
+}
+
+.to-do-logo-container {
+  background-color: var(--task-logo-back);
+  color: var(--primary-beige);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.to-do-date {
+  text-align: right;
+  font-style: italic;
+  align-self: center;
 }
 
 .to-do-card-body {
@@ -337,34 +356,14 @@ select {
   color: var(--primary-black);
 }
 
-.to-do-logo-container {
-  background-color: var(--task-logo-back);
-  color: var(--primary-beige);
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-}
-
-.to-do-date {
-  text-align: right;
-  font-style: italic;
-  align-self: center;
-}
-
 .to-do-card:hover {
-  background-color: #5e5e5e77;
-  cursor: pointer;
   scale: 1.01;
   outline: 1px groove var(--primary-black);
 }
 
-.to-do-card:hover > .to-do-logo-container {
-  background-color: var(--task-logo-hover);
+.to-do-card-collapse:hover, .to-do-card-delete:hover, .to-do-card-edit:hover {
   cursor: pointer;
-  scale: 1.03;
+  scale: 1.1;
 }
 
 /* Project Users Page Styles... */

@@ -21,6 +21,11 @@ export class ProjectsManager {
     if (nameInUse) {
       throw new Error (`A Project with the name "${data.name}" already exists`)
     }
+
+    if (data.acronym.length != 4) {
+      throw new Error (`The acronym "${data.acronym}" is invalid. It must consist of 4 letters`)
+    }
+    
     const project = new Project(data)
     project.ui.addEventListener("click", () => {
       const projectsPage = document.getElementById("projects-page")
@@ -32,6 +37,7 @@ export class ProjectsManager {
       this.setActiveProjectId(project.id)
       this.setDetailsPageTasks()
     })
+
     this.ui.append(project.ui)
     this.list.push(project)
     return project
@@ -160,6 +166,21 @@ export class ProjectsManager {
     this.setDetailsPage(project)
   }
 
+  updateByImport(project, newData: Partial<Project>) {
+    for (const key in newData) {
+      if (newData.hasOwnProperty(key) && project[key]) {
+        if (key == "finishDate" && newData.finishDate instanceof Date) {
+          const dateVaule = newData?.finishDate.toISOString().split('T')[0]
+          project[key] = dateVaule
+        } else {
+          project[key] = newData[key]
+          if (typeof newData.name =="string" && newData.name.length<5) {throw new Error(`The name "${newData.name}" is invalid. Name must contain at least 5 characters`)}
+          if (typeof newData.acronym =="string" && newData.acronym.length!=4) {throw new Error(`The acronym "${newData.acronym}" is invalid. It must consist of 4 letters`)}
+        }
+      }
+    }
+  }
+
   setActiveProjectId (id: string) {
     this.activeProjectId = id
   }
@@ -218,26 +239,30 @@ export class ProjectsManager {
       const json = reader.result
       console.log("THIS IS JSON: ", json)
       if (!json) {return}
-      const newProjects: IProject[] = JSON.parse(json as string)
+      const newProjects: Project[] = JSON.parse(json as string)
       console.log("THIS IS parsedJSON: ", newProjects)
-      const existingProjects = this.list.map((project) => {
-        return project.name})
 
-        for (const project of newProjects) {
-          try {
-            if (existingProjects.includes(project.name)) {
-            throw new Error(`Ein Projekt mit dem namen ${project.name} ist bereits vorhanden`)
-          } else {
-            try {
-              this.newProject(project)
-            } catch (err) {
-              console.log(err)
-            }}
-          } catch (err) {
-            console.log(`${err}`)
-            window.alert(`Import nicht möglich: ${err}`)
-            continue
-          }}
+      const existingProjectNames = this.list.map((project) => {
+        return project.name})
+      const existingProjectsId = this.list.map((project) => {
+        return project.id})
+
+      for (const project of newProjects) {
+        try {
+          if (existingProjectNames.includes(project.name) && !existingProjectsId.includes(project.id)) {
+          throw new Error(`Ein Projekt mit dem namen ${project.name} ist bereits vorhanden`)
+        } else if (existingProjectsId.includes(project.id)) {
+          const oldProject = this.getProject(project.id)
+          this.updateByImport(oldProject, project)
+          oldProject?.updateUI()
+        } else {
+          this.newProject(project)
+        } 
+      } catch (err) {
+        console.log(`${err}`)
+        window.alert(`Import nicht möglich: ${err}`)
+        continue
+      }}
     })
     input.click()
   }

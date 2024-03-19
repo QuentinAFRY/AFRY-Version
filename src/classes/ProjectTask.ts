@@ -56,13 +56,13 @@ export class ProjectTask implements IProjectTask{
                 this.ui.style.backgroundColor = "var(--task-in-progress)"; // Beispiel-Hintergrundfarbe für den Status "inProgress"
                 break;
             case "finished":
-                this.ui.style.backgroundColor = "task-finished"; // Beispiel-Hintergrundfarbe für den Status "closed"
+                this.ui.style.backgroundColor = "var(--task-finished)"; // Beispiel-Hintergrundfarbe für den Status "closed"
                 break;
             default:
                 this.ui.style.backgroundColor = "var(--task-open)"; // Standard-Hintergrundfarbe für unbekannte Status
                 break;
         }
-
+        
         this.ui.innerHTML = `
         <div class="to-do-card-header">
             <div class="to-do-logo-container">
@@ -79,7 +79,7 @@ export class ProjectTask implements IProjectTask{
         <div class="to-do-card-body">
             <div style="display: flex; flex-direction: column; justify-content: space-around; align-items: center">
                 <p style="padding-right: 5px"> ${this.description? this.description : "Add a description!"}</p>
-                <p style="padding-right: 5px"> Due: ${this.finishDate? this.finishDate : "Undefined"}
+                <p style="padding-right: 5px"> Due: ${this.finishDate? this.finishDate.toLocaleDateString() : "Undefined"}
             </div>
             <div class="to-do-card-button-container">
                 <div class="to-do-card-button">
@@ -88,7 +88,7 @@ export class ProjectTask implements IProjectTask{
                     </button>
                 </div>
                 <div class="to-do-card-button" >
-                    <div class="to-do-card-delete" style="width: fit-content">
+                    <div class="to-do-card-delete" style="width: 80%">
                         <span class="material-icons-sharp" style="color: var(--primary-beige)">
                             delete_forever
                         </span>
@@ -103,18 +103,22 @@ export class ProjectTask implements IProjectTask{
     }
 
     setUIEvents() {
-        this.ui.addEventListener("click", () => {
-            const body = this.ui.getElementsByClassName("to-do-card-body")[0] as HTMLDivElement
+        const body = this.ui.getElementsByClassName("to-do-card-body")[0] as HTMLDivElement
+        const head = this.ui.getElementsByClassName("to-do-card-header")[0] as HTMLDivElement
 
+        head.addEventListener("click", () => {
             if (body.style.display = "none") {
                 body.style.display = "grid"
-
-                const collapseBtn = this.ui.getElementsByClassName("to-do-card-collapse")[0]
-
-                collapseBtn.addEventListener("click", () => {
-                    body.style.display = "none"
-                    })
+                console.log("open")
                 }
-            })        
+            })
+
+        const collapseBtn = this.ui.getElementsByClassName("to-do-card-collapse")[0]
+        if (collapseBtn) {
+            collapseBtn.addEventListener("click", () => {
+                body.style.display = "none"
+                console.log("close")
+            })
+        }
     }
 }
