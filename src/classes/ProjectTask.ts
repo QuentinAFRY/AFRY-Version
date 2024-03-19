@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid"
+import { toggleModal } from "../index";
 export type TaskStatus = "open" | "in-progress" | "finished"
 export type TaskLogo = "construction" | "view_in_ar" | "description" |"compost"
 
@@ -21,6 +22,7 @@ export class ProjectTask implements IProjectTask{
 
     ui: HTMLDivElement
     id: string
+    foldStatus: string = "closed"
 
     constructor(info: IProjectTask) {
         for (const key in info) {
@@ -34,6 +36,7 @@ export class ProjectTask implements IProjectTask{
         }
         if (!this.id) {this.id = uuidv4()}
         this.setUI()
+        this.setUIEvents()
     }
 
     getUI() {
@@ -61,16 +64,57 @@ export class ProjectTask implements IProjectTask{
         }
 
         this.ui.innerHTML = `
-        <div class="to-do-logo-container">
-            <span class="material-icons-sharp" style="scale: 1.2">
-                ${this.taskLogo}
-            </span>
+        <div class="to-do-card-header">
+            <div class="to-do-logo-container">
+                <span class="material-icons-sharp" style="scale: 1.2">
+                    ${this.taskLogo}
+                </span>
+            </div>
+            <p style="padding-right: 4px; align-self: center;">
+                ${this.name}</p>
+            <p class="to-do-date">
+                ${this.creationDate.toLocaleDateString()}
+            </p>
         </div>
-        <p style="padding-right: 4px; align-self: center;">
-            ${this.name}</p>
-        <p class="to-do-date">
-            ${this.creationDate.toLocaleDateString()}
-        </p>
+        <div class="to-do-card-body">
+            <div style="display: flex; flex-direction: column; justify-content: space-around; align-items: center">
+                <p style="padding-right: 5px"> ${this.description? this.description : "Add a description!"}</p>
+                <p style="padding-right: 5px"> Due: ${this.finishDate? this.finishDate : "Undefined"}
+            </div>
+            <div class="to-do-card-button-container">
+                <div class="to-do-card-button">
+                    <button class="to-do-card-edit">
+                        Edit
+                    </button>
+                </div>
+                <div class="to-do-card-button" >
+                    <div class="to-do-card-delete" style="width: fit-content">
+                        <span class="material-icons-sharp" style="color: var(--primary-beige)">
+                            delete_forever
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="to-do-card-collapse" style="display: flex; justify-content: center;">
+                <span class="material-icons-sharp" style="scale: 0.5; width: 100px; display: flex; justify-content: center">expand_less</span>
+            </div>
+        </div>
         `
+    }
+
+    setUIEvents() {
+        this.ui.addEventListener("click", () => {
+            const body = this.ui.getElementsByClassName("to-do-card-body")[0] as HTMLDivElement
+
+            if (body.style.display = "none") {
+                body.style.display = "grid"
+
+                const collapseBtn = this.ui.getElementsByClassName("to-do-card-collapse")[0]
+
+                collapseBtn.addEventListener("click", () => {
+                    body.style.display = "none"
+                    })
+                }
+            })        
     }
 }

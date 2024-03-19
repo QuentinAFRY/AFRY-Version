@@ -8,7 +8,7 @@ const projectsManager = new ProjectsManager(projectsListUI);
 const defaultProject = projectsManager.defaultProject;
 defaultProject();
 
-function toggleModal(id: string) {
+export function toggleModal(id: string) {
   const modal = document.getElementById(id);
   if (modal && modal instanceof HTMLDialogElement) {
     modal.open? modal.close() : modal.showModal()
@@ -195,7 +195,7 @@ if (editProjectForm && editProjectForm instanceof HTMLFormElement) {
     }
 })}
 
-  // Adding and editing Tasks in Project Details
+// Adding and editing Tasks in Project Details
 
 const addTaskBtn = document.getElementById("add-task-btn")
 const taskContainer = document.getElementById("task-list") as HTMLDivElement

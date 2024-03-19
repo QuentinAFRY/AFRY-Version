@@ -54,97 +54,68 @@
       <div class="page" id="projects-page">
         <dialog id="new-project-modal">
           <form id="new-project-form">
-            <h3>New Project</h3>
-            <div class="dialog-container">
-              <div class="form-field-container">
-                <label
-                  ><span class="material-icons-sharp"> apartment </span>Project
-                  name</label
-                >
-                <input
-                  name="name"
-                  type="text"
-                  placeholder="What's the name of your project?"
-                />
-                <p
-                  style="
-                    color: gray;
-                    font-size: var(--font-sm);
-                    margin-top: 5px;
-                    font-style: italic;
-                  "
-                >
-                  TIP: Give it a short name
-                </p>
-                <label style="margin-top: 10px;"
-                  ><span class="material-icons-sharp"> abc </span>Project
-                  acronym </label
-                >
-                <input
-                  name="acronym"
-                  type="text"
-                  placeholder="Choose an acronym of 4 letters"
-                  minlength="4"
-                  maxlength="4"
-                  style="text-transform:uppercase"
-                />
+            <p class="form-title">Create new project</p>
+            <div class="form-main">
+              <div class="form-basic-container">
+                <div class="form-input">
+                  <input required="" type="text" name="name" autocomplete="off" placeholder="What's the name of your project?" class="form-input-text">
+                  <label class="form-input-label"><span class="material-icons-sharp"> apartment </span>Project
+                  name </label>
+                </div>
               </div>
-              <div class="form-field-container">
-                <label
-                  ><span class="material-icons-sharp"> density_small </span
-                  >Description</label
-                >
-                <textarea
-                  name="description"
-                  cols="30"
-                  rows="5"
-                  placeholder="Give your project a nice description! So people is jealous about it."
-                ></textarea>
+              <div class="form-basic-container">
+                <div class="form-input">
+                  <input type="text" minlength="4" maxlength="4" name="acronym"  placeholder="Choose acronym of 4 letters" autocomplete="off" class="form-input-text">
+                  <label class="form-input-label"><span class="material-icons-sharp"> abc </span>Project
+                    acronym </label>
+                </div>
               </div>
-              <div class="form-field-container">
-                <label
-                  ><span class="material-icons-sharp"> manage_accounts </span
-                  >Business Unit</label
-                >
-                <select name="businessUnit">
-                  <option>none</option>
-                  <option>Transportation</option>
-                  <option>Sustainability</option>
-                  <option>Energy</option>
-                  <option>Industrial</option>
-                </select>
+              <div class="form-basic-container">
+                <div class="form-input">
+                  <textarea name="description" cols="30" rows="3"  placeholder="Give your project a nice description!" autocomplete="off" class="form-input-text"></textarea>
+                  <label class="form-input-label"><span class="material-icons-sharp" style="scale: 1;"> edit_note </span
+                    >Description </label>
+                </div>
               </div>
-              <div class="form-field-container">
-                <label
-                  ><span class="material-icons-sharp"> task_alt </span
-                  >Status</label
-                >
-                <select name="projectStatus">
-                  <option>Pending</option>
-                  <option>Active</option>
-                  <option>Finished</option>
-                </select>
+              <div class="form-basic-container">
+                <div class="form-input">
+                  <select name="businessUnit" class="form-input-other">
+                    <option selected>N/A</option>
+                    <option>Transportation</option>
+                    <option>Sustainability</option>
+                    <option>Energy</option>
+                    <option>Industrial</option>
+                  </select>
+                  <label class="form-input-label"><span class="material-icons-sharp"> manage_accounts </span
+                    >Business Unit </label>
+                </div>
               </div>
-              <div class="form-field-container">
-                <label for="finishDate">
-                  <span class="material-icons-sharp"> calendar_month </span>
-                  Finish Date
-                </label>
-                <input name="finishDate" type="date"/>
+              <div class="form-basic-container">
+                <div class="form-input">
+                  <select name="projectStatus" class="form-input-other">
+                    <option selected>Pending</option>
+                    <option>Active</option>
+                    <option>Finished</option>
+                  </select>
+                  <label class="form-input-label"><span class="material-icons-sharp"> task_alt </span
+                    >Status </label>
+                </div>
               </div>
-              <div class="form-field-container">
-                <label
-                  ><span class="material-icons-sharp"> hourglass-bottom </span>Project
-                  progress (%) </label
-                >
-                <input
-                  name="progress"
-                  type="number"
-                  min="0"
-                  max="100"
-                  placeholder="Specify the current progress"
-                />
+              <div class="form-basic-container">
+                <div class="form-input">
+                  <input name="finishDate" type="date" class="form-input-other"/>
+                  <label class="form-input-label"><span class="material-icons-sharp"> calendar_month </span>
+                    Finish Date </label>
+                </div>
               </div>
+              <div class="form-basic-container">
+                <div class="form-input">
+                  <input name="progress" type="number" min="0" max="100" placeholder="Specify the current progress" class="form-input-other" id="form-progress"/>
+                  <label class="form-input-label"><span class="material-icons-sharp"> hourglass_bottom </span> Project
+                    progress (%) </label>
+                </div>
+              </div>
+              <div style="border-bottom: 1px solid var(--primary-grey-200)"></div>
               <div class="form-button-container">
                 <button
                   type="button"
@@ -158,7 +129,7 @@
                   class="form-accept-btn"
                   id="accept-project-btn"
                 >
-                  Accept
+                  Add project
                 </button>
               </div>
             </div>
@@ -354,6 +325,58 @@
             </div>
           </form>
         </dialog>
+        <dialog id="task-edit-modal">
+          <form id="task-edit-form">
+            <h3>Edit Task</h3>
+            <div class="dialog-container-task">
+              <div class="form-field-container">
+                <label
+                  ><span class="material-icons-sharp"> task_alt </span
+                  > Current Status </label
+                >
+                <select name="taskStatus">
+                  <option>Open</option>
+                  <option>In-progress</option>
+                  <option>Finished</option>
+                </select>
+              </div>
+              <div class="form-field-container">
+                <label
+                  ><span class="material-icons-sharp"> density_small </span
+                  >Description<span style="color: var(--primary-grey-100); font-style: italic; padding-left: 10px; font-size: 12px;">(optional)</span></label> 
+                <textarea
+                  name="description"
+                  cols="30"
+                  rows="2"
+                  placeholder="If needed, add a more detailed description."
+                ></textarea>
+              </div>
+              <div class="form-field-container">
+                <label for="finishDate">
+                  <span class="material-icons-sharp"> calendar_month </span>
+                  Finish Date<span style="color: var(--primary-grey-100); font-style: italic; padding-left: 10px; font-size: 12px;">(optional)</span>
+                </label>
+                <input name="finishDate" type="date"/>
+              </div>
+              <div class="form-button-container">
+                <button
+                  type="button"
+                  class="form-cancel-btn"
+                  id="cancel-project-edit-btn"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  class="form-accept-btn"
+                  id="accept-project-edit-btn"
+                >
+                  Add Task
+                </button>
+              </div>
+            </div>
+          </form>
+        </dialog>
         <header>
           <div>
             <h2 data-project-info="name">Empty</h2>
@@ -470,7 +493,7 @@
                   padding: 10px;
                 "
               >
-              </div>
+            </div>
             </div>
           </div>
           <div id="viewer-container" class="dashboard-card"></div>
