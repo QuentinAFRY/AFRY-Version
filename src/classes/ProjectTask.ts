@@ -58,9 +58,6 @@ export class ProjectTask implements IProjectTask{
             case "finished":
                 this.ui.style.backgroundColor = "var(--task-finished)"; // Beispiel-Hintergrundfarbe für den Status "closed"
                 break;
-            default:
-                this.ui.style.backgroundColor = "var(--task-open)"; // Standard-Hintergrundfarbe für unbekannte Status
-                break;
         }
         
         this.ui.innerHTML = `
@@ -83,8 +80,8 @@ export class ProjectTask implements IProjectTask{
             </div>
             <div class="to-do-card-button-container">
                 <div class="to-do-card-button">
-                    <button class="to-do-card-edit">
-                        Edit
+                    <button class="to-do-card-status">
+                        Status
                     </button>
                 </div>
                 <div class="to-do-card-button" >
@@ -118,6 +115,33 @@ export class ProjectTask implements IProjectTask{
             collapseBtn.addEventListener("click", () => {
                 body.style.display = "none"
                 console.log("close")
+            })
+        }
+
+        const deleteBtn = this.ui.getElementsByClassName("to-do-card-delete")[0]
+        if (deleteBtn) {
+            deleteBtn.addEventListener("click", () => {
+                this.ui.remove()
+            })
+        }
+
+        const statusBtn = this.ui.getElementsByClassName("to-do-card-status")[0]
+        if (statusBtn) {
+            statusBtn.addEventListener("click", () => {
+                switch (this.taskStatus) {
+                    case "open":
+                        this.taskStatus = "in-progress"; // Beispiel-Hintergrundfarbe für den Status "open"
+                        this.ui.style.backgroundColor = "var(--task-in-progress)"
+                        break;
+                    case "in-progress":
+                        this.taskStatus = "finished"; // Beispiel-Hintergrundfarbe für den Status "inProgress"
+                        this.ui.style.backgroundColor = "var(--task-finished)"
+                        break;
+                    case "finished":
+                        this.taskStatus = "open"; // Beispiel-Hintergrundfarbe für den Status "closed"
+                        this.ui.style.backgroundColor = "var(--task-open)"
+                        break;
+                }
             })
         }
     }
