@@ -1,20 +1,21 @@
-import { IProject, BusinessUnit, ProjectStatus } from "./classes/Project";
-import { ProjectsManager } from "./classes/ProjectsManager";
-import { IProjectTask, TaskLogo, TaskStatus } from "./classes/ProjectTask";
+import { IProject, BusinessUnit, ProjectStatus } from "./classes/Project"
+import { ProjectsManager } from "./classes/ProjectsManager"
+import { IProjectTask, TaskLogo, TaskStatus } from "./classes/ProjectTask"
+import * as THREE from "three"
 
-const projectsListUI = document.getElementById("projects-list") as HTMLElement;
-const projectsManager = new ProjectsManager(projectsListUI);
+const projectsListUI = document.getElementById("projects-list") as HTMLElement
+const projectsManager = new ProjectsManager(projectsListUI)
 
-const defaultProject = projectsManager.defaultProject;
-defaultProject();
+const defaultProject = projectsManager.defaultProject
+defaultProject()
 
 export function toggleModal(id: string) {
-  const modal = document.getElementById(id);
+  const modal = document.getElementById(id)
   if (modal && modal instanceof HTMLDialogElement) {
     modal.open? modal.close() : modal.showModal()
     console.log(`The Modal ${modal} was toggled`)
   } else {
-    console.warn("The provided modal wasn't found in the DOM. ID: ", id);
+    console.warn("The provided modal wasn't found in the DOM. ID: ", id)
   }
 }
 
@@ -241,3 +242,25 @@ if (taskForm && taskForm instanceof HTMLFormElement) {
     toggleModal("task-modal");
   })
 }
+
+//ThreeJs Viewer
+const scene = new THREE.Scene()
+
+const viewerContainer = document.getElementById("viewer-container") as HTMLDivElement
+
+
+const containerDimensions = viewerContainer.getBoundingClientRect()
+const aspectRatio = containerDimensions.width / containerDimensions.height
+const camera = new THREE.PerspectiveCamera(75, aspectRatio)
+
+viewerContainer.addEventListener("click", () => {
+  console.log("containerDimensions: ", containerDimensions)
+  console.log("containerDimensions.width: ", containerDimensions.width)
+  console.log("containerDimensions.height: ", containerDimensions.height)
+})
+
+const renderer = new THREE.WebGLRenderer()
+viewerContainer.append(renderer.domElement)
+renderer.setSize(containerDimensions.width, containerDimensions.height)
+
+renderer.render(scene, camera)

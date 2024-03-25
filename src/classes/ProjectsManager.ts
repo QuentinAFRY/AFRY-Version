@@ -7,6 +7,16 @@ export class ProjectsManager {
 
   constructor(container: HTMLElement) {
     this.ui = container
+    const project = this.newProject({
+      name: "Viewer Project" as string,
+      acronym: "TEST" as string,
+      description: "Project description goes here..." as string,
+      businessUnit: "Transportation" as BusinessUnit,
+      projectStatus: "Finished" as ProjectStatus,
+      finishDate: new Date(),
+      progress: 20 as number,
+    })
+    project.ui.click()
   }
 
   getProjectList () {
@@ -153,6 +163,7 @@ export class ProjectsManager {
       progress: 20 as number,
     }
     this.newProject(data)
+    this.ui.click()
   }
   
   updateProjectData(project, newData: Partial<Project>) {
