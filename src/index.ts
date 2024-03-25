@@ -2,6 +2,7 @@ import { IProject, BusinessUnit, ProjectStatus } from "./classes/Project"
 import { ProjectsManager } from "./classes/ProjectsManager"
 import { IProjectTask, TaskLogo, TaskStatus } from "./classes/ProjectTask"
 import * as THREE from "three"
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls"
 
 const projectsListUI = document.getElementById("projects-list") as HTMLElement
 const projectsManager = new ProjectsManager(projectsListUI)
@@ -249,20 +250,23 @@ const scene = new THREE.Scene()
 const viewerContainer = document.getElementById("viewer-container") as HTMLDivElement
 
 
-const containerDimensions = viewerContainer.getBoundingClientRect()
-const aspectRatio = containerDimensions.width / containerDimensions.height
-const camera = new THREE.PerspectiveCamera(75, aspectRatio)
+const camera = new THREE.PerspectiveCamera(75)
 camera.position.z = 5
 
-viewerContainer.addEventListener("click", () => {
-  console.log("containerDimensions: ", containerDimensions)
-  console.log("containerDimensions.width: ", containerDimensions.width)
-  console.log("containerDimensions.height: ", containerDimensions.height)
-})
-
-const renderer = new THREE.WebGLRenderer()
+const renderer = new THREE.WebGLRenderer({alpha: true, antialias: true})
 viewerContainer.append(renderer.domElement)
-renderer.setSize(containerDimensions.width, containerDimensions.height)
+
+function resizeViewer() {
+  const containerDimensions = viewerContainer.getBoundingClientRect()
+  renderer.setSize(containerDimensions.width, containerDimensions.height)
+  const aspectRatio = containerDimensions.width / containerDimensions.height
+  camera.aspect = aspectRatio
+  camera.updateProjectionMatrix()
+}
+
+window.addEventListener("resize", resizeViewer)
+
+resizeViewer()
 
 const boxGeometry = new THREE.BoxGeometry()
 const material = new THREE.MeshStandardMaterial()
@@ -270,6 +274,15 @@ const cube = new THREE.Mesh(boxGeometry, material)
 
 const directionalLight = new THREE.DirectionalLight()
 const ambientLight = new THREE.AmbientLight()
+ambientLight.intensity = .4
 
 scene.add(cube, directionalLight, ambientLight)
-renderer.render(scene, camera)
+
+const cameraControls = new OrbitControls(camera, viewerContainer)
+
+function renderScene() {
+  renderer.render(scene, camera)
+  requestAnimationFrame(renderScene)
+}
+
+renderScene()
