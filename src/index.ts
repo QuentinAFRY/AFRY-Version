@@ -1,9 +1,7 @@
 import { IProject, BusinessUnit, ProjectStatus } from "./classes/Project"
 import { ProjectsManager } from "./classes/ProjectsManager"
 import { IProjectTask, TaskLogo, TaskStatus } from "./classes/ProjectTask"
-import * as THREE from "three"
-import {OrbitControls} from "three/examples/jsm/controls/OrbitControls"
-import {GUI} from "three/examples/jsm/libs/lil-gui.module.min"
+
 
 const projectsListUI = document.getElementById("projects-list") as HTMLElement
 const projectsManager = new ProjectsManager(projectsListUI)
@@ -245,87 +243,8 @@ if (taskForm && taskForm instanceof HTMLFormElement) {
   })
 }
 
-/*----------ThreeJs Viewer----------*/
 
-// set up scene and DOMcontainer
-const scene = new THREE.Scene()
-const viewerContainer = document.getElementById("viewer-container") as HTMLDivElement
 
-// set up camera and controls
-const camera = new THREE.PerspectiveCamera(75)
-camera.position.z = 5
-const cameraControls = new OrbitControls(camera, viewerContainer)
 
-// set up renderer
-const renderer = new THREE.WebGLRenderer({alpha: true, antialias: true})
-viewerContainer.append(renderer.domElement)
 
-function resizeViewer() {
-  const containerDimensions = viewerContainer.getBoundingClientRect()
-  renderer.setSize(containerDimensions.width, containerDimensions.height)
-  const aspectRatio = containerDimensions.width / containerDimensions.height
-  camera.aspect = aspectRatio
-  camera.updateProjectionMatrix()
-}
-window.addEventListener("resize", resizeViewer)
-resizeViewer()
 
-// set up simple cube object
-const cubeColor = new THREE.Color( 0xf69104 )
-const boxGeometry = new THREE.BoxGeometry()
-const material = new THREE.MeshStandardMaterial({color: cubeColor, roughness: 0.4, metalness: 0.5, fog: true})
-const cube = new THREE.Mesh(boxGeometry, material)
-scene.add(cube)
-
-// set up Lighting
-const white = new THREE.Color(0xffffff)
-const directionalLight = new THREE.DirectionalLight(white, 0.5)
-const ambientLight = new THREE.AmbientLight(white, 0.7)
-directionalLight.position.set(0, 3, 0)
-const pointLight = new THREE.PointLight(white, 2, 3, 0.1)
-pointLight.position.set(0, 1.5, 1.5)
-scene.add(directionalLight, ambientLight, pointLight)
-
-// set up render-loop for responsiveness (60fps)
-function renderScene() {
-  renderer.render(scene, camera)
-  requestAnimationFrame(renderScene)
-}
-renderScene()
-
-// set up helpers
-const axesHelper = new THREE.AxesHelper(5)
-const grid = new THREE.GridHelper(10, 10)
-grid.material.transparent = true
-grid.material.opacity = 0.4
-grid.material.color = new THREE.Color("#204080")
-const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight,5)
-const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.5)
-scene.add(axesHelper, grid, directionalLightHelper, pointLightHelper)
-
-// set up GUI 
-const gui = new GUI()
-const gridControls = gui.addFolder("Grid")
-gridControls.add(grid.material, "transparent")
-gridControls.add(grid.material, "opacity")
-gridControls.addColor(grid.material, "color")
-const cubeControls = gui.addFolder("Cube")
-cubeControls.add(cube.position, "x", -5, 5, 1)
-cubeControls.add(cube.position, "y", -5, 5, 1)
-cubeControls.add(cube.position, "z", -5, 5, 1)
-cubeControls.addColor(cube.material, "color")
-cubeControls.add(cube.material, "roughness", 0, 1, 0.1)
-cubeControls.add(cube.material, "metalness", 0, 1, 0.1)
-const dLightControls = gui.addFolder("Direct Light")
-dLightControls.add(directionalLight.position, "x", -3, 3, 0.5)
-dLightControls.add(directionalLight.position, "y", -3, 3, 0.5)
-dLightControls.add(directionalLight.position, "z", -3, 3, 0.5)
-dLightControls.add(directionalLight, "intensity",  0, 1, 0.1)
-dLightControls.addColor(directionalLight, "color")
-const pLightControls = gui.addFolder("Point Light")
-pLightControls.add(pointLight.position, "x", -5, 5, 1)
-pLightControls.add(pointLight.position, "y", -5, 5, 1)
-pLightControls.add(pointLight.position, "z", -5, 5, 1)
-pLightControls.add(pointLight, "intensity", 0, 5, 0.5)
-pLightControls.add(pointLight, "decay", 0, 0.5, 0.01)
-pLightControls.addColor(pointLight, "color")
