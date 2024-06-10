@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "openbim-components": "^1.2.0",
-    "three": "0.152.2",
+    "three": "^0.160.1",
     "uuid": "^9.0.1"
   }
 }

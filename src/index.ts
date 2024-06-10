@@ -1,6 +1,9 @@
 import { IProject, BusinessUnit, ProjectStatus } from "./classes/Project"
 import { ProjectsManager } from "./classes/ProjectsManager"
 import { IProjectTask, TaskLogo, TaskStatus } from "./classes/ProjectTask"
+import * as OBC from "openbim-components";
+import { createCube } from "./classes/ThreeJs";
+import { update } from "three/examples/jsm/libs/tween.module.js";
 
 
 const projectsListUI = document.getElementById("projects-list") as HTMLElement
@@ -243,8 +246,80 @@ if (taskForm && taskForm instanceof HTMLFormElement) {
   })
 }
 
+/**
+ * START OF COMPONENTS
+ */
 
+const viewer = new OBC.Components()
 
+const sceneComponent = new OBC.SimpleScene(viewer)
+viewer.scene = sceneComponent
+const scene = sceneComponent.get()
+sceneComponent.setup()
+scene.background = null
+
+const viewerContainer = document.getElementById("viewer-container") as HTMLDivElement
+const rendererComponent = new OBC.PostproductionRenderer(viewer, viewerContainer)
+viewer.renderer = rendererComponent
+
+const cameraComponent = new OBC.OrthoPerspectiveCamera(viewer)
+viewer.camera = cameraComponent
+
+const raycasterComponent = new OBC.SimpleRaycaster(viewer)
+viewer.raycaster = raycasterComponent
+
+viewer.init()
+cameraComponent.updateAspect()
+rendererComponent.postproduction.enabled = true
+
+const cube = createCube()
+//scene.add(cube)
+
+const ifcLoader = new OBC.FragmentIfcLoader(viewer)
+ifcLoader.settings.wasm = {
+  path: "https://unpkg.com/web-ifc@0.0.53/",
+  absolute: true
+}
+
+const highlighter = new OBC.FragmentHighlighter(viewer)
+highlighter.setup()
+
+const classifier = new OBC.FragmentClassifier(viewer)
+const classificationWindow = new OBC.FloatingWindow(viewer)
+viewer.ui.add(classificationWindow)
+classificationWindow.title = "Model Groups"
+
+async function createModelTree() {
+  const fragmentTree = new OBC.FragmentTree(viewer)
+  fragmentTree.init()
+  await fragmentTree.update(["model", "storeys", "entities"])
+  fragmentTree.onHovered.add((fragmentMap) => {
+    highlighter.highlightByID("hover", fragmentMap.items)
+  })
+  fragmentTree.onSelected.add((fragmentMap) => {
+    highlighter.highlightByID("select", fragmentMap.items)
+  })
+  const tree = fragmentTree.get().uiElement.get("tree")
+  return tree
+}
+
+ifcLoader.onIfcLoaded.add(async (model) => {
+  highlighter.updateHighlight()
+  classifier.byModel(model.name, model)
+  classifier.byStorey(model)
+  classifier.byEntity(model)
+  console.log(classifier.get())
+  console.log("name: ", model.name)
+  const tree = await createModelTree()
+  await classificationWindow.slots.content.dispose(true)
+  classificationWindow.addChild(tree)
+})
+
+const toolbar = new OBC.Toolbar(viewer)
+toolbar.addChild(
+  ifcLoader.uiElement.get("main")
+)
+viewer.ui.addToolbar(toolbar)
 
 
 

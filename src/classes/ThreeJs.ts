@@ -6,7 +6,17 @@ import { upload3DFile } from "./test";
 
 /*----------ThreeJs Viewer----------*/
 
-// set up scene and DOMcontainer
+
+// set up simple cube object
+export function createCube() {
+  const cubeColor = new THREE.Color( 0xf69104 )
+  const boxGeometry = new THREE.BoxGeometry()
+  const material = new THREE.MeshStandardMaterial({color: cubeColor, roughness: 0.4, metalness: 0.5, fog: true})
+  const cube = new THREE.Mesh(boxGeometry, material)
+  return(cube)
+}
+
+/**  set up scene and DOMcontainer
 const scene = new THREE.Scene()
 const viewerContainer = document.getElementById("viewer-container") as HTMLDivElement
 
@@ -29,7 +39,6 @@ function resizeViewer() {
 window.addEventListener("resize", resizeViewer)
 resizeViewer()
 
-// set up simple cube object
 const cubeColor = new THREE.Color( 0xf69104 )
 const boxGeometry = new THREE.BoxGeometry()
 const material = new THREE.MeshStandardMaterial({color: cubeColor, roughness: 0.4, metalness: 0.5, fog: true})
@@ -99,3 +108,4 @@ if (upload3DBtn)  {
     addGuiPosition(objectControls, object, -5, 5, 1)
   })
 }
+*/
