@@ -1,7 +1,9 @@
 import { IProject, BusinessUnit, ProjectStatus } from "./classes/Project"
 import { ProjectsManager } from "./classes/ProjectsManager"
+import { FragmentsGroup, IfcProperties } from "bim-fragment";
 import { IProjectTask, TaskLogo, TaskStatus } from "./classes/ProjectTask"
 import * as OBC from "openbim-components";
+import * as WEBIFC from "web-ifc";
 import { createCube } from "./classes/ThreeJs";
 import { update } from "three/examples/jsm/libs/tween.module.js";
 
@@ -272,8 +274,36 @@ viewer.init()
 cameraComponent.updateAspect()
 rendererComponent.postproduction.enabled = true
 
-const cube = createCube()
-//scene.add(cube)
+function exportProperties(model: FragmentsGroup) {
+  const fragmentProperties = JSON.stringify(model.getLocalProperties())
+  const blob = new Blob ([fragmentProperties], {type: 'application/json'})
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  if (model.name) {
+    a.download = `${model.name.replace(".ifc", "")}.json`
+  } else {
+    a.download = `model`
+  }
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+const fragmentManager = new OBC.FragmentManager(viewer)
+function exportFragments(model: FragmentsGroup) {
+  const fragmentBinary = fragmentManager.export(model)
+  const blob = new Blob ([fragmentBinary])
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  if (model.name) {
+    a.download = `${model.name.replace(".ifc", "")}.frag`
+  } else {
+    a.download = `model.frag`
+  }
+  a.click()
+  URL.revokeObjectURL(url)
+}
 
 const ifcLoader = new OBC.FragmentIfcLoader(viewer)
 ifcLoader.settings.wasm = {
@@ -284,10 +314,23 @@ ifcLoader.settings.wasm = {
 const highlighter = new OBC.FragmentHighlighter(viewer)
 highlighter.setup()
 
+const propertiesProcessor = new OBC.IfcPropertiesProcessor(viewer)
+highlighter.events.select.onClear.add(() => {
+  propertiesProcessor.cleanPropertiesList()
+})
+
 const classifier = new OBC.FragmentClassifier(viewer)
 const classificationWindow = new OBC.FloatingWindow(viewer)
+classificationWindow.visible = false
 viewer.ui.add(classificationWindow)
 classificationWindow.title = "Model Groups"
+
+const classificationsBtn = new OBC.Button(viewer)
+classificationsBtn.materialIcon = "account_tree"
+classificationsBtn.onClick.add(() => {
+  classificationWindow.visible = !classificationWindow.visible
+  classificationWindow.active = classificationWindow.visible
+})
 
 async function createModelTree() {
   const fragmentTree = new OBC.FragmentTree(viewer)
@@ -303,23 +346,131 @@ async function createModelTree() {
   return tree
 }
 
-ifcLoader.onIfcLoaded.add(async (model) => {
+async function onModelLoaded(model: FragmentsGroup) {
   highlighter.updateHighlight()
-  classifier.byModel(model.name, model)
-  classifier.byStorey(model)
-  classifier.byEntity(model)
-  console.log(classifier.get())
-  console.log("name: ", model.name)
-  const tree = await createModelTree()
-  await classificationWindow.slots.content.dispose(true)
-  classificationWindow.addChild(tree)
+
+  try {
+    classifier.byModel(model.name, model)
+    classifier.byStorey(model)
+    classifier.byEntity(model)
+    console.log(classifier.get())
+    console.log(model)
+    console.log(model.getLocalProperties())
+    const tree = await createModelTree()
+    await classificationWindow.slots.content.dispose(true)
+    classificationWindow.addChild(tree)
+
+    propertiesProcessor.process(model)
+    highlighter.events.select.onHighlight.add((fragmentMap) => {
+      console.log(fragmentMap)
+      const expressID = [...Object.values(fragmentMap)[0]][0]
+      const Bauteil = model.getObjectByProperty("expressID", expressID)
+      console.log(model.getProperties(expressID))
+      propertiesProcessor.renderProperties(model, Number(expressID))
+    })
+  } catch (error) {
+    alert(error)
+  }  
+}
+
+ifcLoader.onIfcLoaded.add(async (model) => {
+  exportProperties(model)
+  exportFragments(model)
+  onModelLoaded(model)
+})
+
+fragmentManager.onFragmentsLoaded.add((model) => {
+  if (tempProperties) {
+    model.setLocalProperties(tempProperties)
+  } else {
+    alert("No properties loaded")
+  }
+  onModelLoaded(model)
+})
+
+const importFragmentBtn = new OBC.Button(viewer)
+importFragmentBtn.materialIcon = "upload"
+importFragmentBtn.tooltip = "Load FRAG"
+
+const importPropertiesBtn = new OBC.Button(viewer)
+importPropertiesBtn.materialIcon = "upload"
+importPropertiesBtn.tooltip = "Load PROPERTIES"
+let tempProperties : IfcProperties[]
+
+importPropertiesBtn.onClick.add(() => {
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = '.json'
+  const reader = new FileReader()
+
+  reader.addEventListener('load', async () => {
+    const result = reader.result
+    console.log("THIS IS properties: ", result)
+    if (!result) {return}
+    const json = JSON.parse(result as string)
+    tempProperties = json
+    console.log("JSON", json)
+  })
+  input.addEventListener('change', () => {
+    const filesList = input.files
+    if (!filesList) {return}
+    reader.readAsText(filesList[0])
+  })
+  input.click()
+})
+
+importFragmentBtn.onClick.add(() => {
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = '.frag, .json'
+  input.multiple = true
+
+  input.addEventListener('change', () => {
+    const filesList = input.files
+    if (!filesList || filesList.length > 2) {
+      alert("Invalid number of files. You nee more than one file and less than two.")
+      return
+    }
+    let jsonCount = 0
+    let fragCount = 0
+    
+    for (let i = 0; i < filesList.length; i++) {
+      const file = filesList[i]
+      const reader = new FileReader()
+      if (file.name.endsWith('.frag')) {
+        reader.readAsArrayBuffer(file)
+        fragCount++
+        reader.addEventListener('load', async () => {
+          const binary = reader.result
+          if (!binary || !(binary instanceof ArrayBuffer)) {return}
+          const fragmentBinary = new Uint8Array(binary)
+          await fragmentManager.load(fragmentBinary)
+        })
+      } else if (file.name.endsWith('.json')) {
+        reader.readAsText(file)
+        jsonCount++
+        reader.addEventListener('load', async () => {
+          const properties = reader.result
+          if (!properties || !(typeof properties === "string")) {return}
+          const json = JSON.parse(properties)
+          tempProperties = json
+        })
+      }
+    }
+    if (fragCount > 1 || jsonCount > 1) {
+      alert("Only one .frag and one .json file can be loaded at a time.")
+      return
+    }
+  })
+  input.click()
 })
 
 const toolbar = new OBC.Toolbar(viewer)
 toolbar.addChild(
-  ifcLoader.uiElement.get("main")
+  ifcLoader.uiElement.get("main"),
+  importFragmentBtn,
+  importPropertiesBtn,
+  classificationsBtn,
+  propertiesProcessor.uiElement.get("main")
 )
 viewer.ui.addToolbar(toolbar)
-
-
-
