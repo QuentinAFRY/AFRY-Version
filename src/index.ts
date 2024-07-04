@@ -3,6 +3,8 @@ import { ProjectsManager } from "./classes/ProjectsManager"
 import { FragmentsGroup, IfcProperties } from "bim-fragment";
 import { IProjectTask, TaskLogo, TaskStatus } from "./classes/ProjectTask"
 import * as OBC from "openbim-components";
+import { TodoCreator } from "./bim-components/TodoCreator";
+import { fragImportHandler } from "./classes/fragImport/fragImporter";
 import * as WEBIFC from "web-ifc";
 import { createCube } from "./classes/ThreeJs";
 import { update } from "three/examples/jsm/libs/tween.module.js";
@@ -308,7 +310,7 @@ function exportFragments(model: FragmentsGroup) {
 const ifcLoader = new OBC.FragmentIfcLoader(viewer)
 ifcLoader.settings.wasm = {
   path: "https://unpkg.com/web-ifc@0.0.53/",
-  absolute: true
+  absolute: true,
 }
 
 const highlighter = new OBC.FragmentHighlighter(viewer)
@@ -346,8 +348,19 @@ async function createModelTree() {
   return tree
 }
 
+const culler = new OBC.ScreenCuller(viewer)
+culler.setup()
+cameraComponent.controls.addEventListener("sleep", () => {
+  culler.elements.needsUpdate = true
+})
+
 async function onModelLoaded(model: FragmentsGroup) {
   highlighter.updateHighlight()
+  for (const fragment of model.items) {
+    culler.elements.add(fragment.mesh)
+  }
+  culler.elements.needsUpdate = true
+
 
   try {
     classifier.byModel(model.name, model)
@@ -379,98 +392,38 @@ ifcLoader.onIfcLoaded.add(async (model) => {
   onModelLoaded(model)
 })
 
-fragmentManager.onFragmentsLoaded.add((model) => {
-  if (tempProperties) {
-    model.setLocalProperties(tempProperties)
-  } else {
-    alert("No properties loaded")
-  }
-  onModelLoaded(model)
-})
+let tempProperties : IfcProperties = {}
 
 const importFragmentBtn = new OBC.Button(viewer)
 importFragmentBtn.materialIcon = "upload"
 importFragmentBtn.tooltip = "Load FRAG"
 
-const importPropertiesBtn = new OBC.Button(viewer)
-importPropertiesBtn.materialIcon = "upload"
-importPropertiesBtn.tooltip = "Load PROPERTIES"
-let tempProperties : IfcProperties[]
-
-importPropertiesBtn.onClick.add(() => {
-  const input = document.createElement('input')
-  input.type = 'file'
-  input.accept = '.json'
-  const reader = new FileReader()
-
-  reader.addEventListener('load', async () => {
-    const result = reader.result
-    console.log("THIS IS properties: ", result)
-    if (!result) {return}
-    const json = JSON.parse(result as string)
-    tempProperties = json
-    console.log("JSON", json)
-  })
-  input.addEventListener('change', () => {
-    const filesList = input.files
-    if (!filesList) {return}
-    reader.readAsText(filesList[0])
-  })
-  input.click()
+fragImportHandler(importFragmentBtn, fragmentManager, tempProperties, (properties) => {
+  tempProperties = properties
+  console.log("Properties updated: ", properties)
 })
 
-importFragmentBtn.onClick.add(() => {
-  const input = document.createElement('input')
-  input.type = 'file'
-  input.accept = '.frag, .json'
-  input.multiple = true
-
-  input.addEventListener('change', () => {
-    const filesList = input.files
-    if (!filesList || filesList.length > 2) {
-      alert("Invalid number of files. You nee more than one file and less than two.")
-      return
+fragmentManager.onFragmentsLoaded.add((model) => {
+  setTimeout(() => {
+    console.log("Fragments loaded: ", model)
+    if (tempProperties) {
+      model.setLocalProperties(tempProperties)
+    } else {
+      alert("No properties loaded")
     }
-    let jsonCount = 0
-    let fragCount = 0
-    
-    for (let i = 0; i < filesList.length; i++) {
-      const file = filesList[i]
-      const reader = new FileReader()
-      if (file.name.endsWith('.frag')) {
-        reader.readAsArrayBuffer(file)
-        fragCount++
-        reader.addEventListener('load', async () => {
-          const binary = reader.result
-          if (!binary || !(binary instanceof ArrayBuffer)) {return}
-          const fragmentBinary = new Uint8Array(binary)
-          await fragmentManager.load(fragmentBinary)
-        })
-      } else if (file.name.endsWith('.json')) {
-        reader.readAsText(file)
-        jsonCount++
-        reader.addEventListener('load', async () => {
-          const properties = reader.result
-          if (!properties || !(typeof properties === "string")) {return}
-          const json = JSON.parse(properties)
-          tempProperties = json
-        })
-      }
-    }
-    if (fragCount > 1 || jsonCount > 1) {
-      alert("Only one .frag and one .json file can be loaded at a time.")
-      return
-    }
-  })
-  input.click()
+    onModelLoaded(model)
+  }, 1000)
 })
+
+const todoCreator = new TodoCreator(viewer)
 
 const toolbar = new OBC.Toolbar(viewer)
 toolbar.addChild(
   ifcLoader.uiElement.get("main"),
   importFragmentBtn,
-  importPropertiesBtn,
   classificationsBtn,
-  propertiesProcessor.uiElement.get("main")
+  propertiesProcessor.uiElement.get("main"),
+  fragmentManager.uiElement.get("main"),
+  todoCreator.uiElement.get("activationButton")
 )
 viewer.ui.addToolbar(toolbar)
