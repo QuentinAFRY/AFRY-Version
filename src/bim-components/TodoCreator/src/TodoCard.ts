@@ -3,6 +3,9 @@ import * as OBC from "openbim-components"
 export class TodoCard extends OBC.SimpleUIComponent {
 
     onCardClick = new OBC.Event()
+    slots: {
+        actionButtons: OBC.SimpleUIComponent
+    }
 
     set description(value: string) {
         const descriptionElement = this.getInnerElement("description") as HTMLParagraphElement
@@ -16,13 +19,16 @@ export class TodoCard extends OBC.SimpleUIComponent {
 
     constructor(components: OBC.Components) {
         const template = `    
-        <div class="todo-item" style="background: var(--primary-blue-100); padding: 5px 15px; border-radius: 5px">        
-            <div class="to-do-card-header">
-                <div class="to-do-logo-container">
-                    <span class="material-icons-sharp" style="scale: 1.2">construction</span>
+        <div class="todo-item">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; column-gap: 15px; align-items: center;">
+                    <span class="material-icons-sharp" style="padding: 10px; background-color: var(--primary-grey-100); border-radius: 10px;">construction</span>
+                    <div>
+                    <p id="date" style="text-wrap: nowrap; color: #a9a9a9; font-size: var(--font-sm)">Fri, 20 sep</p>
+                        <p id="description">Make anything here as you want, even something longer.</p>
+                    </div>
                 </div>
-                <p id="description" style="padding-right: 4px; align-self: center;">Name</p>
-                <p id="date" class="to-do-date">Fri, 20 sep</p>
+                <div data-tooeen-slot="actionButtons"></div>
             </div>
         </div>
         `
@@ -32,5 +38,11 @@ export class TodoCard extends OBC.SimpleUIComponent {
         cardElement.addEventListener("click", () => {
             this.onCardClick.trigger()
         })
+
+        this.setSlot("actionButtons", new OBC.SimpleUIComponent(this._components))
+
+        const deleteBtn = new OBC.Button(this._components)
+        deleteBtn.materialIcon = "delete"
+        this.slots.actionButtons.addChild(deleteBtn)
     }
 }

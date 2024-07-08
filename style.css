@@ -13,7 +13,7 @@
   --font-style-XS: 12px;
   --primary-black: #323232;
   --primary-white: #ffffff;
-  --primary-neon: #f3ffaf;
+  --primary-neon: #c5d377;
   --primary-beige: #e9e6e0;
   --primary-blue-100: #405070;
   --primary-blue-200: #707c94;
@@ -28,7 +28,7 @@
   --primary-grey-300: #b2b2b2;
   --primary-grey-400: #d0d0d0;
   --primary-grey-500: #f8f8f8;
-  --task-open: #535374f2;
+  --task-open: #26282b;
   --task-in-progress: #ffce4a85;
   --task-finished: #36733d85;
   --task-logo-back: #00000017;
@@ -287,81 +287,17 @@ select {
 
 /* Task animation - Edit and Delete */
 
-.to-do-card {
-  background-color: var(--task-finished);
-  box-sizing: border-box;
+.todo-item {
+  padding: 20px;
+  background-color: var(--task-open);
   color: var(--primary-beige);
-  font-size: var(--font-style-XS);
-  padding: 0 10px;
-  border-radius: 8px;
-  width: 100%;
-}
-
-.to-do-card-header {
-  display: grid;
-  grid-template-columns: 60px 1fr 80px;
-  justify-content: space-between;
-  padding: 10px 0;
-}
-
-.to-do-logo-container {
-  background-color: var(--task-logo-back);
-  color: var(--primary-beige);
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-}
-
-.to-do-date {
-  text-align: right;
-  font-style: italic;
-  align-self: center;
-}
-
-.to-do-card-body {
-  display: none;
-  border-top: 1px solid var(--primary-grey-100);
-  max-height: fit-content;
-  min-height: 50px;
-  grid-template-columns: 1fr 40px;
-  padding-top: 10px;
-}
-
-.to-do-card-button-container {
-  display: flex;
-  gap: 10px;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 3px 0;
-}
-
-.to-do-card-button {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-self: center;
-}
-
-.to-do-card-edit {
-  font-size: var(--font-style-XS);
-  padding: 0 6px;
-  background-color: var(--primary-beige);
-  border: 1px outset var(--task-logo-hover);
-  border-radius: 3px;
-  color: var(--primary-black);
-}
-
-.to-do-card:hover {
-  scale: 1.01;
-  outline: 1px groove var(--primary-black);
-}
-
-.to-do-card-collapse:hover, .to-do-card-delete:hover, .to-do-card-edit:hover {
+  outline: 1px solid var(--primary-grey-100);
+  border-radius: 10px;
   cursor: pointer;
-  scale: 1.1;
+}
+
+.todo-item:hover {
+  outline: 1px solid var(--primary-neon);
 }
 
 /* Project Users Page Styles... */
