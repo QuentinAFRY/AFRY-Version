@@ -1,6 +1,8 @@
+import { update } from 'three/examples/jsm/libs/tween.module.js';
 import { TodoCard } from './src/TodoCard';
 import * as THREE from "three"
 import * as OBC from "openbim-components"
+import { v4 as uuidv4 } from "uuid"
 
 type ToDoPriority = "Low" | "Normal" | "High"
 interface ToDo {
@@ -9,15 +11,19 @@ interface ToDo {
     fragmentMap: OBC.FragmentIdMap
     camera: {position: THREE.Vector3, target: THREE.Vector3}
     priority: ToDoPriority
+    id: string
 }
 
 
-export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
+export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI, OBC.Disposable {
     static uuid = "c5014422-1e54-452f-a280-a09e1a3c966c"
+    onTodoCreated = new OBC.Event<ToDo>()
     enabled = true
+    onDisposed: OBC.Event<any>;
     uiElement = new OBC.UIElement<{
         activationButton: OBC.Button
         todoList: OBC.FloatingWindow
+        colorizeBtn: OBC.Button
     }>()
     private _components: OBC.Components
     private _list: ToDo[] = []
@@ -30,14 +36,21 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
         this.setUI()
     }
 
-    async setup() {
-        const highlighter = await this._components.tools.get(OBC.FragmentHighlighter)
+    async dispose() {
+        this.uiElement.dispose()
+        this._list = []
+        this.enabled = false
+    }
+
+    setup() {
+        const highlighter = this._components.tools.get(OBC.FragmentHighlighter)
         highlighter.add(`${TodoCreator.uuid}-priority-Low`, [new THREE.MeshStandardMaterial({color: 0x59bc59})])
         highlighter.add(`${TodoCreator.uuid}-priority-Normal`, [new THREE.MeshStandardMaterial({color: 0x597cff})])
         highlighter.add(`${TodoCreator.uuid}-priority-High`, [new THREE.MeshStandardMaterial({color: 0xff7676})])
     }
 
     addTodo(description: string, priority: ToDoPriority) {
+        if (!this.enabled) {return}
         const camera = this._components.camera
         if (!(camera instanceof OBC.OrthoPerspectiveCamera)) {
             throw new Error("TodoCreator needs an OrthoPerspectiveCamera in order to work.")
@@ -54,7 +67,8 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
             date: new Date(),
             fragmentMap: highlighter.selection.select,
             camera: todoCamera,
-            priority
+            priority,
+            id: new uuidv4()
         }
 
         this._list.push(todo)
@@ -76,13 +90,26 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
             if (fragmentMapLenght === 0) {return}
             highlighter.highlightByID("select", todo.fragmentMap)
         })
+        todoCard.onCardDelete.add(() => {
+            this.deleteTodo(todo, todoCard)
+        })
+
         const todoList = this.uiElement.get("todoList")
         todoList.addChild(todoCard)
+
+        this.onTodoCreated.trigger(todo)
     }
 
-    deleteTodo() {
-        // Implement the deletion of ToDo items
+    deleteTodo(todo: ToDo, todo_card: TodoCard) {
+        // Get the index of the todo in the list
+        const index = this._list.indexOf(todo)
+        // Remove the todo from the list
+        this._list.splice(index, 1)
+        // Remove the todo card from the UI
+        todo_card.dispose()
 
+        // Clear the highlight of the todo fragments
+        this.updateColor()
     }
 
 
@@ -119,9 +146,9 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
             form.visible = false
         })
         
-        form.onCancel.add(() => form.visible = false)                                           // Hide the form when the cancel button is clicked
+        form.onCancel.add(() => form.visible = false)
 
-        newTodoBtn.onClick.add(() => form.visible = true)                                   // Show the form when the button is clicked
+        newTodoBtn.onClick.add(() => form.visible = true)                                  
 
         const todoList = new OBC.FloatingWindow(this._components)
         this._components.ui.add(todoList)
@@ -136,19 +163,12 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
         colorizeBtn.materialIcon = "palette"
         todoListToolbar.addChild(colorizeBtn)
 
-        const highlighter = this._components.tools.get(OBC.FragmentHighlighter)
         colorizeBtn.onClick.add(() => {
             colorizeBtn.active = !colorizeBtn.active
             if (colorizeBtn.active) {
-                for (const todo of this._list) {
-                    const fragmentMapLenght = Object.keys(todo.fragmentMap).length
-                    if (fragmentMapLenght === 0) {return}
-                    highlighter.highlightByID(`${TodoCreator.uuid}-priority-${todo.priority}`, todo.fragmentMap)
-                }
+                this.applyColor()
             } else {
-                highlighter.clear(`${TodoCreator.uuid}-priority-Low`)
-                highlighter.clear(`${TodoCreator.uuid}-priority-Normal`)
-                highlighter.clear(`${TodoCreator.uuid}-priority-High`)
+                this.removeColor()
             }
         })
 
@@ -156,7 +176,32 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
         activationButton.addChild(todoListBtn)
         todoListBtn.onClick.add(() => todoList.visible = !todoList.visible)
 
-        this.uiElement.set({activationButton, todoList})
+        this.uiElement.set({activationButton, todoList, colorizeBtn})
+    }
+
+    // This method colorizes the todo elements by their priority
+    private applyColor() {
+        const highlighter = this._components.tools.get(OBC.FragmentHighlighter)
+        for (const todo of this._list) {
+            const fragmentMapLenght = Object.keys(todo.fragmentMap).length
+            if (fragmentMapLenght === 0) {return}
+            highlighter.highlightByID(`${TodoCreator.uuid}-priority-${todo.priority}`, todo.fragmentMap)
+        }
+    }
+
+    // This method removes the colorization from the todo elements
+    private removeColor() {
+        const highlighter = this._components.tools.get(OBC.FragmentHighlighter)
+        highlighter.clear(`${TodoCreator.uuid}-priority-Low`)
+        highlighter.clear(`${TodoCreator.uuid}-priority-Normal`)
+        highlighter.clear(`${TodoCreator.uuid}-priority-High`)
+    }
+
+    // This method updates the colorization of the todo elements
+    updateColor() {
+        if (!(this.uiElement.get("colorizeBtn").active)) {return}
+        this.removeColor()
+        this.applyColor()
     }
 
     get(): ToDo[] {

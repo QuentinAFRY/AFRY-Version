@@ -1,0 +1,1 @@
+import * as OBC from "openbim-components"
