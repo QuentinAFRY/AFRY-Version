@@ -19,6 +19,7 @@
     "bim-fragment": "1.5.0",
     "openbim-components": "^1.2.0",
     "three": "^0.160.1",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "web-ifc": "0.0.53"
   }
 }

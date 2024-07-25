@@ -1,3 +1,4 @@
+import { SimpleQTO } from './bim-components/SimpleQTO/index';
 import { IProject, BusinessUnit, ProjectStatus } from "./classes/Project"
 import { ProjectsManager } from "./classes/ProjectsManager"
 import { FragmentsGroup, IfcProperties } from "bim-fragment";
@@ -5,9 +6,6 @@ import { IProjectTask, TaskLogo, TaskStatus } from "./classes/ProjectTask"
 import * as OBC from "openbim-components";
 import { TodoCreator } from "./bim-components/TodoCreator";
 import { fragImportHandler } from "./classes/fragImport/fragImporter";
-import * as WEBIFC from "web-ifc";
-import { createCube } from "./classes/ThreeJs";
-import { update } from "three/examples/jsm/libs/tween.module.js";
 
 
 const projectsListUI = document.getElementById("projects-list") as HTMLElement
@@ -140,7 +138,6 @@ if (newProjectForm && newProjectForm instanceof HTMLFormElement) {
       const project = projectsManager.newProject(projectData);
       toggleModal("new-project-modal");
       newProjectForm.reset();
-      console.log(project);
     } catch (err) {
       errorPopUp(err)
     }
@@ -366,19 +363,14 @@ async function onModelLoaded(model: FragmentsGroup) {
     classifier.byModel(model.name, model)
     classifier.byStorey(model)
     classifier.byEntity(model)
-    console.log(classifier.get())
-    console.log(model)
-    console.log(model.getLocalProperties())
     const tree = await createModelTree()
     await classificationWindow.slots.content.dispose(true)
     classificationWindow.addChild(tree)
 
     propertiesProcessor.process(model)
     highlighter.events.select.onHighlight.add((fragmentMap) => {
-      console.log(fragmentMap)
       const expressID = [...Object.values(fragmentMap)[0]][0]
       const Bauteil = model.getObjectByProperty("expressID", expressID)
-      console.log(model.getProperties(expressID))
       propertiesProcessor.renderProperties(model, Number(expressID))
     })
   } catch (error) {
@@ -416,7 +408,18 @@ fragmentManager.onFragmentsLoaded.add((model) => {
 })
 
 const todoCreator = new TodoCreator(viewer)
-await todoCreator.setup()
+todoCreator.setup()
+
+const simpleQto = new SimpleQTO(viewer)
+simpleQto.setup()
+
+const propsFinder = new OBC.IfcPropertiesFinder(viewer)
+propsFinder.init()
+propsFinder.uiElement.get("queryWindow").get().style.justifyContent = "flex-start"
+propsFinder.onFound.add((fragmentIDMap) => {
+  highlighter.highlightByID("select", fragmentIDMap)
+})
+
 
 const toolbar = new OBC.Toolbar(viewer)
 toolbar.addChild(
@@ -425,6 +428,8 @@ toolbar.addChild(
   classificationsBtn,
   propertiesProcessor.uiElement.get("main"),
   fragmentManager.uiElement.get("main"),
-  todoCreator.uiElement.get("activationButton")
+  propsFinder.uiElement.get("main"),
+  todoCreator.uiElement.get("activationButton"),
+  simpleQto.uiElement.get("activationBtn")
 )
 viewer.ui.addToolbar(toolbar)
