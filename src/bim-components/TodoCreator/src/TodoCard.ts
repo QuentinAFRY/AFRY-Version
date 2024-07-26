@@ -4,6 +4,7 @@ export class TodoCard extends OBC.SimpleUIComponent {
 
     onCardClick = new OBC.Event()
     onCardDelete = new OBC.Event()
+    onCardEdit = new OBC.Event()
     slots: {
         actionButtons: OBC.SimpleUIComponent
     }
@@ -40,14 +41,22 @@ export class TodoCard extends OBC.SimpleUIComponent {
             this.onCardClick.trigger()
         })
 
+
+        // seeting up the actionsbuttons slot
         this.setSlot("actionButtons", new OBC.SimpleUIComponent(this._components))
 
         const deleteBtn = new OBC.Button(this._components)
         deleteBtn.materialIcon = "delete"
-        this.slots.actionButtons.addChild(deleteBtn)
+        const editBtn = new OBC.Button(this._components)
+        editBtn.materialIcon = "edit"
+
+        this.slots.actionButtons.addChild(deleteBtn, editBtn)
 
         deleteBtn.onClick.add(() => {
             this.onCardDelete.trigger()
+        })
+        editBtn.onClick.add(() => {
+            this.onCardEdit.trigger()
         })
     }
 }
