@@ -4,21 +4,30 @@ import * as THREE from "three"
 import * as OBC from "openbim-components"
 import { v4 as uuidv4 } from "uuid"
 
+type FormState = "create" | "edit"
 export class TodoCreator extends OBC.Component<TodoItem[]> implements OBC.UI, OBC.Disposable {
     
     static uuid = "c5014422-1e54-452f-a280-a09e1a3c966c"
     enabled = true
-    onDisposed: OBC.Event<any>;
     uiElement = new OBC.UIElement<{
         activationButton: OBC.Button
         todoList: OBC.FloatingWindow
         colorizeBtn: OBC.Button
+        form: OBC.Modal
     }>()
 
-    onTodoCreated = new OBC.Event<TodoItem>()
-
+    private _formState: FormState = "create"
     private _components: OBC.Components
     private _list: TodoItem[] = []
+
+    onTodoCreated = new OBC.Event<TodoItem>()
+    onDisposed: OBC.Event<any>;
+
+    priorityColors = {
+        Low: 0x59bc59,
+        Normal: 0x597cff,
+        High: 0xff7676,
+    }
 
 
     constructor(components: OBC.Components) {
@@ -28,11 +37,17 @@ export class TodoCreator extends OBC.Component<TodoItem[]> implements OBC.UI, OB
         this.setUI()
     }
 
+    formatColorToHex(color: any) {
+        const hexColor = new THREE.Color(color)
+        const stringColor = hexColor.getHexString()
+        return "#" + stringColor
+    }
+
     setup() {
         const highlighter = this._components.tools.get(OBC.FragmentHighlighter)
-        highlighter.add(`${TodoCreator.uuid}-priority-Low`, [new THREE.MeshStandardMaterial({color: 0x59bc59})])
-        highlighter.add(`${TodoCreator.uuid}-priority-Normal`, [new THREE.MeshStandardMaterial({color: 0x597cff})])
-        highlighter.add(`${TodoCreator.uuid}-priority-High`, [new THREE.MeshStandardMaterial({color: 0xff7676})])
+        highlighter.add(`${TodoCreator.uuid}-priority-Low`, [new THREE.MeshStandardMaterial({color: this.priorityColors.Low})])
+        highlighter.add(`${TodoCreator.uuid}-priority-Normal`, [new THREE.MeshStandardMaterial({color: this.priorityColors.Normal})])
+        highlighter.add(`${TodoCreator.uuid}-priority-High`, [new THREE.MeshStandardMaterial({color: this.priorityColors.High})])
     }
 
 
@@ -73,10 +88,10 @@ export class TodoCreator extends OBC.Component<TodoItem[]> implements OBC.UI, OB
         activationButton.addChild(todoListBtn)
         todoListBtn.onClick.add(() => todoList.visible = !todoList.visible)
 
-        this.uiElement.set({activationButton, todoList, colorizeBtn})
+        this.uiElement.set({activationButton, todoList, colorizeBtn, form})
     }
 
-    private setForm(todo?: TodoItem): OBC.Modal {
+    private setForm(): OBC.Modal {
         const form = new OBC.Modal(this._components)
         this._components.ui.add(form)
         form.title = "Create New ToDo"
@@ -97,17 +112,18 @@ export class TodoCreator extends OBC.Component<TodoItem[]> implements OBC.UI, OB
         form.slots.content.get().style.flexDirection = "column"
         form.slots.content.get().style.rowGap = "20px"
 
-        if (!todo) {
-            
-        }
-
         form.onAccept.add(() => {
-            this.addTodo(descriptionInput.value, priorityDropdown.value as ToDoPriority)
-            form.dispose()
+            if (this._formState === "create") {
+                this.addTodo(descriptionInput.value, priorityDropdown.value as ToDoPriority)
+                descriptionInput.value = ""
+                form.visible = false
+            }
+        })
+
+        form.onCancel.add(() => {
+            form.visible = false
         })
         
-        form.onCancel.add(() => form.dispose())
-
         return form
     }
 
@@ -128,20 +144,35 @@ export class TodoCreator extends OBC.Component<TodoItem[]> implements OBC.UI, OB
         })
 
         todo.onEdit.add(() => {
+            this._formState = "edit"
             this.editTodo(todo)
         })
     }
 
     editTodo(todo: TodoItem) {
         if (!this.enabled) {return}
-
-        const form = this.setForm(todo)
-        if (!form.visible) {
-            console.error("Form is not visible")
+        const form = this.uiElement.get("form") as OBC.Modal
+        if (form.visible) {
+            console.error("You cannot edit at the moment, a form is already open.")
             return
         }
+        todo.zoomTodo()
+        form.visible = true
+        form.title = "Edit ToDo"
+        const description = form.slots.content.children[0].innerElements.input as HTMLInputElement
+        description.value = todo.description
 
-        console.log(form.slots.content.innerElements[0])
+        const dropdown = form.slots.content.children[1] as OBC.Dropdown
+        dropdown.value = todo.priority
+
+        form.onAccept.add(() => {
+            if (this._formState === "edit") {
+                todo.updateTodo(description.value, dropdown.value as ToDoPriority)
+                this._formState = "create"
+                this.updateColor()
+                form.visible = false
+            }
+        })
     }
 
     deleteTodo(todo: TodoItem) {
@@ -158,6 +189,8 @@ export class TodoCreator extends OBC.Component<TodoItem[]> implements OBC.UI, OB
             const fragmentMapLenght = Object.keys(todo.fragmentMap).length
             if (fragmentMapLenght === 0) {return}
             highlighter.highlightByID(`${TodoCreator.uuid}-priority-${todo.priority}`, todo.fragmentMap)
+            const icon = todo.uiElement.get("todoCard").getInnerElement("icon") as HTMLSpanElement
+            icon.style.backgroundColor = `${this.formatColorToHex((this.priorityColors[todo.priority]))}`
         }
     }
 
@@ -167,6 +200,10 @@ export class TodoCreator extends OBC.Component<TodoItem[]> implements OBC.UI, OB
         highlighter.clear(`${TodoCreator.uuid}-priority-Low`)
         highlighter.clear(`${TodoCreator.uuid}-priority-Normal`)
         highlighter.clear(`${TodoCreator.uuid}-priority-High`)
+        for (const todo of this._list) {
+            const icon = todo.uiElement.get("todoCard").getInnerElement("icon") as HTMLSpanElement
+            icon.style.backgroundColor = "var(--primary-grey-100)"
+        }
     }
 
     // This method updates the colorization of the todo elements

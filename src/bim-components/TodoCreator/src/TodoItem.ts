@@ -112,6 +112,13 @@ export class TodoItem extends OBC.Component<Todo> implements OBC.UI, OBC.Disposa
         if (fragmentMapLenght === 0) {return}
         highlighter.highlightByID("select", this.fragmentMap)
     }
+
+    updateTodo (description: string, priority: ToDoPriority) {
+        this.description = description
+        this.priority = priority
+        const todoCard = this.uiElement.get("todoCard") as TodoCard
+        todoCard.description = this.description
+    }
     
     onDisposed: OBC.Event<any>;
     
