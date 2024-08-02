@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid"
 import { toggleModal } from "../index";
+
 export type TaskStatus = "open" | "in-progress" | "finished"
 export type TaskLogo = "construction" | "view_in_ar" | "description" |"compost"
 
@@ -76,7 +77,7 @@ export class ProjectTask implements IProjectTask{
         <div class="to-do-card-body">
             <div style="display: flex; flex-direction: column; justify-content: space-around; align-items: center">
                 <p style="padding-right: 5px"> ${this.description? this.description : "Add a description!"}</p>
-                <p style="padding-right: 5px"> Due: ${this.finishDate? this.finishDate.toLocaleDateString() : "Undefined"}
+                <p style="padding-right: 5px"> Due: ${this.finishDate? this.finishDate.toLocaleDateString() : "Undefined"}</p>
             </div>
             <div class="to-do-card-button-container">
                 <div class="to-do-card-button">

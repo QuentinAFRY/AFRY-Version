@@ -1,0 +1,8 @@
+Model Information:
+* title:	Mechanical Spider
+* source:	https://sketchfab.com/3d-models/mechanical-spider-87e0a94c2e1f44b5b5c9d088f4d5f4ab
+* author:	vertexmonster (https://sketchfab.com/vertexmonster)
+
+Model License:
+* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
+* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works
