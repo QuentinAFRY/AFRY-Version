@@ -75,20 +75,19 @@ export class SimpleQTO extends OBC.Component<QtoResult> implements OBC.UI, OBC.D
 
     // Logic for getting the EntityNames and their Quantities + Values
     async sumQuantities(fragmentIdMap: OBC.FragmentIdMap) {
-        console.time("sumQuantities")
-        console.log("Start sumQuantities")
+
+        // console.log("fragmentIdMap", fragmentIdMap)
+
         const fragmentManager = this._components.tools.get(OBC.FragmentManager)
-        
         const propertiesProcessor = this._components.tools.get(OBC.IfcPropertiesProcessor)
 
         for (const fragmentID in fragmentIdMap) {
             const fragment = fragmentManager.list[fragmentID]
-
             const model = fragment.mesh.parent
 
             if (!(model instanceof FragmentsGroup)) {continue}
             const properties = model.getLocalProperties()
-
+            
             const modelIndexMap = propertiesProcessor.get()[model.uuid]
 
             if (!(properties) || (!modelIndexMap)) {continue}
@@ -110,7 +109,6 @@ export class SimpleQTO extends OBC.Component<QtoResult> implements OBC.UI, OBC.D
                 }
             }
         }
-        console.timeEnd("sumQuantities")
     }
 
     async processQuantities(model: FragmentsGroup, mapID: number) {

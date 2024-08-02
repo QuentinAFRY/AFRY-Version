@@ -13,7 +13,8 @@ export class TodoCreator extends OBC.Component<TodoItem[]> implements OBC.UI, OB
         activationButton: OBC.Button
         todoList: OBC.FloatingWindow
         colorizeBtn: OBC.Button
-        form: OBC.Modal
+        todoForm: OBC.Modal
+        filterBar: OBC.SimpleUIComponent
     }>()
 
     private _formState: FormState = "create"
@@ -48,47 +49,6 @@ export class TodoCreator extends OBC.Component<TodoItem[]> implements OBC.UI, OB
         highlighter.add(`${TodoCreator.uuid}-priority-Low`, [new THREE.MeshStandardMaterial({color: this.priorityColors.Low})])
         highlighter.add(`${TodoCreator.uuid}-priority-Normal`, [new THREE.MeshStandardMaterial({color: this.priorityColors.Normal})])
         highlighter.add(`${TodoCreator.uuid}-priority-High`, [new THREE.MeshStandardMaterial({color: this.priorityColors.High})])
-    }
-
-
-    private setUI() {
-        const activationButton = new OBC.Button(this._components)
-        activationButton.materialIcon = "construction"
-
-        const newTodoBtn = new OBC.Button(this._components, {name: "Create"})
-        activationButton.addChild(newTodoBtn)
-
-        const form = this.setForm()
-
-        newTodoBtn.onClick.add(() => form.visible = true)                                  
-
-        const todoList = new OBC.FloatingWindow(this._components)
-        this._components.ui.add(todoList)
-        todoList.get().style.justifyContent = "flex-start"
-        todoList.visible = false
-        todoList.title = "ToDo List"
-
-        const todoListToolbar = new OBC.SimpleUIComponent(this._components)
-        todoList.addChild(todoListToolbar)
-
-        const colorizeBtn = new OBC.Button(this._components, {name: "Colorize"})
-        colorizeBtn.materialIcon = "palette"
-        todoListToolbar.addChild(colorizeBtn)
-
-        colorizeBtn.onClick.add(() => {
-            colorizeBtn.active = !colorizeBtn.active
-            if (colorizeBtn.active) {
-                this.applyColor()
-            } else {
-                this.removeColor()
-            }
-        })
-
-        const todoListBtn = new OBC.Button(this._components, {name: "List"})
-        activationButton.addChild(todoListBtn)
-        todoListBtn.onClick.add(() => todoList.visible = !todoList.visible)
-
-        this.uiElement.set({activationButton, todoList, colorizeBtn, form})
     }
 
     private setForm(): OBC.Modal {
@@ -127,6 +87,125 @@ export class TodoCreator extends OBC.Component<TodoItem[]> implements OBC.UI, OB
         return form
     }
 
+
+
+    private setUI() {
+        // UI Element Creation and setup
+        const activationButton = new OBC.Button(this._components)
+        activationButton.materialIcon = "construction"
+
+        const newTodoBtn = new OBC.Button(this._components, {name: "Create"})
+        const todoListBtn = new OBC.Button(this._components, {name: "List"})
+        const todoForm = this.setForm()
+
+        const todoList = new OBC.FloatingWindow(this._components)
+        this._components.ui.add(todoList)
+        todoList.get().style.justifyContent = "flex-start"
+        todoList.visible = false
+        todoList.title = "ToDo List"
+        const todoListToolbar = new OBC.SimpleUIComponent(this._components)
+        todoListToolbar.get().style.display = "flex"
+        todoListToolbar.get().style.alignItems = "center"
+        todoListToolbar.get().style.justifyContent = "space-between"
+
+        const filterBar = new OBC.SimpleUIComponent(this._components)
+        filterBar.get().style.display = "flex"
+        const filterInput = new OBC.TextInput(this._components)
+        filterInput.label = ""
+        filterInput.get().style.width = "12rem"
+        const filterInputInner = filterInput.innerElements.input as HTMLInputElement
+        filterInputInner.placeholder = "Filter by description"
+        filterInputInner.style.padding = "2px 5px"
+
+        const filterLabel = new OBC.SimpleUIComponent(this._components)
+        const span = document.createElement("span")
+        span.style.cursor = "default"
+        span.classList.add("material-icons")
+        span.textContent = "search"
+        filterLabel.get().appendChild(span)
+        
+
+        const filterDelete = new OBC.Button(this._components)
+        filterDelete.materialIcon = "backspace"
+
+        const countElementsBtn = new OBC.Button(this._components, {name: ""})
+        countElementsBtn.materialIcon = "summarize"
+        countElementsBtn.get().style.cursor = "help"
+
+        const colorizeBtn = new OBC.Button(this._components, {name: ""})
+        colorizeBtn.materialIcon = "palette"
+
+                            
+        
+        // Event Listeners
+        newTodoBtn.onClick.add(() => todoForm.visible = true)    
+        todoListBtn.onClick.add(() => todoList.visible = !todoList.visible)
+
+        //___filterBar
+        filterInputInner.addEventListener("input", (i) => {
+            if (i.target) {
+                const input = i.target as HTMLInputElement
+                console.log(input.value.toLowerCase())
+                this.searchTodos(this._list, input.value.toLowerCase())
+            }
+        })
+        filterDelete.onClick.add(() => {
+            filterInputInner.value = ""
+            this.searchTodos(this._list, "")
+        })
+
+        //___countElementsButton
+        countElementsBtn.onClick.add(() => {
+            this.getNumberOfFragments()
+        })
+        
+        //___colorizeButton
+        colorizeBtn.onClick.add(() => {
+            colorizeBtn.active = !colorizeBtn.active
+            if (colorizeBtn.active) {
+                this.applyColor()
+            } else {
+                this.removeColor()
+            }
+        })
+
+        // Adding the Elements to the UI
+        activationButton.addChild(todoListBtn, newTodoBtn)
+        todoList.addChild(todoListToolbar)
+        todoListToolbar.addChild(filterBar, countElementsBtn, colorizeBtn)
+        filterBar.addChild(filterLabel, filterInput, filterDelete)
+        this.uiElement.set({activationButton, todoList, filterBar, colorizeBtn, todoForm})
+    }
+
+    searchTodos(todoList: TodoItem[], filterValue: string) {
+        for (const todo of todoList) {
+            const description = todo.description.toLowerCase()
+            console.log(description)
+            if (description.includes(filterValue)) {
+                todo.setVisibility(true)
+            } else {
+                todo.setVisibility(false)
+            }
+        }
+    }
+
+    getNumberOfFragments() {
+        let fragments: string[] = []
+
+        for (const todo in this._list) {
+            for (const fragment in this._list[todo].fragmentMap) {
+                if (!fragments.includes(fragment)) {
+                    fragments.push(fragment)
+                }
+            }
+        }
+        const message = `There are ${fragments.length} elements associated with ToDos`
+
+        const infoBox = new OBC.ToastNotification(this.components, {message: message, materialIconName: "info"})
+        this._components.ui.add(infoBox)
+        infoBox.visible = true
+    }
+
     addTodo(description: string, priority: ToDoPriority) {
         if (!this.enabled) {return}
 
@@ -151,7 +230,7 @@ export class TodoCreator extends OBC.Component<TodoItem[]> implements OBC.UI, OB
 
     editTodo(todo: TodoItem) {
         if (!this.enabled) {return}
-        const form = this.uiElement.get("form") as OBC.Modal
+        const form = this.uiElement.get("todoForm") as OBC.Modal
         if (form.visible) {
             console.error("You cannot edit at the moment, a form is already open.")
             return

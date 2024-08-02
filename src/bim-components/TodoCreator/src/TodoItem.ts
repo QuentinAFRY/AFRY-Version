@@ -23,8 +23,7 @@ export class TodoItem extends OBC.Component<Todo> implements OBC.UI, OBC.Disposa
     onEdit = new OBC.Event()
     
     enabled: boolean = true
-    private _components: OBC.Components
-    
+    private _components: OBC.Components    
 
     description: string
     date: Date
@@ -51,6 +50,16 @@ export class TodoItem extends OBC.Component<Todo> implements OBC.UI, OBC.Disposa
         const todoCard = new TodoCard(this._components)
         todoCard.description = this.description
         this.uiElement.set({todoCard})
+    }
+
+    setVisibility(value: boolean) {
+        const todoCard = this.uiElement.get("todoCard").get()
+        if (todoCard && value === false) {
+            todoCard.style.display = "none"
+        }
+        if (todoCard &&  value === true) {
+            todoCard.style.display = "block"
+        }
     }
 
     setTodo (description: string, priority: ToDoPriority) {
@@ -86,6 +95,7 @@ export class TodoItem extends OBC.Component<Todo> implements OBC.UI, OBC.Disposa
         todoCard.onCardEdit.add(() => {
             this.onEdit.trigger()
         })
+        console.log(Object.keys(this.fragmentMap))
     }
 
     async dispose () {
@@ -118,6 +128,10 @@ export class TodoItem extends OBC.Component<Todo> implements OBC.UI, OBC.Disposa
         this.priority = priority
         const todoCard = this.uiElement.get("todoCard") as TodoCard
         todoCard.description = this.description
+    }
+
+    getFragmentCount(): number {
+        return Object.keys(this.fragmentMap).length
     }
     
     onDisposed: OBC.Event<any>;

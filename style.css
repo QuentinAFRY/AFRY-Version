@@ -288,6 +288,7 @@ select {
 /* Task animation - Edit and Delete */
 
 .todo-item {
+  display: block;
   padding: 20px;
   background-color: var(--task-open);
   color: var(--primary-beige);
