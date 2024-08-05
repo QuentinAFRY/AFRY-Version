@@ -122,6 +122,7 @@ export class TodoCreator extends OBC.Component<TodoItem[]> implements OBC.UI, OB
         span.style.cursor = "default"
         span.classList.add("material-icons")
         span.textContent = "search"
+        span.style.scale = "0.8"
         filterLabel.get().appendChild(span)
         
 

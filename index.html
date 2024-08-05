@@ -20,22 +20,8 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <div id="app"></div>
     <!-- Sidebar -->
-    <aside id="sidebar">
-      <img
-        id="company-logo"
-        src="./Assets/AFRY_Logotype_Horizontal (1).svg"
-        alt="Construction Company"
-      />
-      <ul id="nav-buttons">
-        <li id="side-bar-projects">
-          <span class="material-icons-sharp"> location_city </span> Projects
-        </li>
-        <li><span class="material-icons-sharp"> compost </span> LCA-Data</li>
-        <li><span class="material-icons-sharp"> verified </span> Report</li>
-        <li><span class="material-icons-sharp"> people_alt </span> Users</li>
-      </ul>
-    </aside>
     <!-- Main Content -->
     <main id="content">
       <dialog id="error-dialog">
@@ -55,105 +41,6 @@
           <button id="error-dialog-btn">OK</button>
         </div>
       </dialog>
-      <!-- Projects Page -->
-      <div class="page" id="projects-page">
-        <dialog id="new-project-modal">
-          <form id="new-project-form">
-            <p class="form-title">Create new project</p>
-            <div class="form-main">
-              <div class="form-basic-container">
-                <div class="form-input">
-                  <input required="" type="text" name="name" autocomplete="off" placeholder="What's the name of your project?" class="form-input-text">
-                  <label class="form-input-label"><span class="material-icons-sharp"> apartment </span>Project
-                  name </label>
-                </div>
-              </div>
-              <div class="form-basic-container">
-                <div class="form-input">
-                  <input type="text" minlength="4" maxlength="4" name="acronym"  placeholder="Choose acronym of 4 letters" autocomplete="off" class="form-input-text">
-                  <label class="form-input-label"><span class="material-icons-sharp"> abc </span>Project
-                    acronym </label>
-                </div>
-              </div>
-              <div class="form-basic-container">
-                <div class="form-input">
-                  <textarea name="description" cols="30" rows="3"  placeholder="Give your project a nice description!" autocomplete="off" class="form-input-text"></textarea>
-                  <label class="form-input-label"><span class="material-icons-sharp" style="scale: 1;"> edit_note </span
-                    >Description </label>
-                </div>
-              </div>
-              <div class="form-basic-container">
-                <div class="form-input">
-                  <select name="businessUnit" class="form-input-other">
-                    <option selected>N/A</option>
-                    <option>Transportation</option>
-                    <option>Sustainability</option>
-                    <option>Energy</option>
-                    <option>Industrial</option>
-                  </select>
-                  <label class="form-input-label"><span class="material-icons-sharp"> manage_accounts </span
-                    >Business Unit </label>
-                </div>
-              </div>
-              <div class="form-basic-container">
-                <div class="form-input">
-                  <select name="projectStatus" class="form-input-other">
-                    <option selected>Pending</option>
-                    <option>Active</option>
-                    <option>Finished</option>
-                  </select>
-                  <label class="form-input-label"><span class="material-icons-sharp"> task_alt </span
-                    >Status </label>
-                </div>
-              </div>
-              <div class="form-basic-container">
-                <div class="form-input">
-                  <input name="finishDate" type="date" class="form-input-other"/>
-                  <label class="form-input-label"><span class="material-icons-sharp"> calendar_month </span>
-                    Finish Date </label>
-                </div>
-              </div>
-              <div class="form-basic-container">
-                <div class="form-input">
-                  <input name="progress" type="number" min="0" max="100" placeholder="Specify the current progress" class="form-input-other" id="form-progress"/>
-                  <label class="form-input-label"><span class="material-icons-sharp"> hourglass_bottom </span> Project
-                    progress (%) </label>
-                </div>
-              </div>
-              <div style="border-bottom: 1px solid var(--primary-grey-200)"></div>
-              <div class="form-button-container">
-                <button
-                  type="button"
-                  class="form-cancel-btn"
-                  id="cancel-project-btn"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  class="form-accept-btn"
-                  id="accept-project-btn"
-                >
-                  Add project
-                </button>
-              </div>
-            </div>
-          </form>
-        </dialog>
-        <header>
-          <h2>Projects</h2>
-          <div style="display: flex; gap: 20px;">
-            <span style="border: solid 1px var(--primary-grey-200)" id="import-projects-btn" class="material-symbols-outlined" style="scale: 1.2;">
-              upload</span
-            >
-            <span style="border: solid 1px var(--primary-grey-200)" id="export-projects-btn" class="material-symbols-outlined" style="scale: 1.2;"> download </span>
-            <button id="new-project-btn">
-              <span class="material-icons-sharp"> upload_file </span>New Project
-            </button>
-          </div>
-        </header>
-        <div id="projects-list"></div>
-      </div>
       <!-- Project Details Page -->
       <div class="page" id="project-details" style="display: none">
         <dialog id="edit-project-modal">
@@ -713,6 +600,6 @@
         </dialog>
       </div>
     </main>
-    <script type="module" src="./src/index.ts"></script>
+    <script type="module" src="./src/index.tsx"></script>
   </body>
 </html>

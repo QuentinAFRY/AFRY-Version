@@ -1,15 +1,28 @@
+import * as OBC from "openbim-components";
+import * as React from "react";
+import * as ReactDOM from "react-dom/client";
+import { Sidebar } from "./react-components/Sidebar";
+import { ProjectsPage } from "./react-components/ProjectsPage";
 import { SimpleQTO } from './bim-components/SimpleQTO/index';
 import { IProject, BusinessUnit, ProjectStatus } from "./classes/Project"
 import { ProjectsManager } from "./classes/ProjectsManager"
 import { FragmentsGroup, IfcProperties } from "bim-fragment";
 import { IProjectTask, TaskLogo, TaskStatus } from "./classes/ProjectTask"
-import * as OBC from "openbim-components";
+
 import { TodoCreator } from "./bim-components/TodoCreator";
 import { fragImportHandler } from "./classes/fragImport/fragImporter";
 
+const rootElement = document.getElementById("app") as HTMLDivElement
+const appRoot = ReactDOM.createRoot(rootElement)
+appRoot.render(
+  <>
+    <Sidebar />
+    <ProjectsPage />
+  </>
+)
 
 const projectsListUI = document.getElementById("projects-list") as HTMLElement
-const projectsManager = new ProjectsManager(projectsListUI)
+const projectsManager = new ProjectsManager()
 
 const defaultProject = projectsManager.defaultProject
 defaultProject()
@@ -24,22 +37,22 @@ export function toggleModal(id: string) {
   }
 }
 
-function getProjectFormData(form: HTMLFormElement) {
-  const formData = new FormData(form);
-  const formDate = new Date(formData.get("finishDate") as string)
+// function getProjectFormData(form: HTMLFormElement) {
+//   const formData = new FormData(form);
+//   const formDate = new Date(formData.get("finishDate") as string)
  
 
-  const projectData: IProject = {
-    acronym: formData.get("acronym") as string,
-    name: formData.get("name") as string,
-    description: String(formData.get("description") || "...add a project description"),
-    businessUnit: formData.get("businessUnit") as BusinessUnit,
-    projectStatus: formData.get("projectStatus") as ProjectStatus,
-    finishDate:  isNaN(formDate.getDate())? new Date() : formDate,
-    progress: Number(formData.get("progress") ?? 0)
-  }
-  return projectData
-}
+//   const projectData: IProject = {
+//     acronym: formData.get("acronym") as string,
+//     name: formData.get("name") as string,
+//     description: String(formData.get("description") || "...add a project description"),
+//     businessUnit: formData.get("businessUnit") as BusinessUnit,
+//     projectStatus: formData.get("projectStatus") as ProjectStatus,
+//     finishDate:  isNaN(formDate.getDate())? new Date() : formDate,
+//     progress: Number(formData.get("progress") ?? 0)
+//   }
+//   return projectData
+// }
 
 function getTaskFormData(form: HTMLFormElement) {
   const formData = new FormData(form);
@@ -118,44 +131,11 @@ if (sidebarProjectsBtn) {
   })
 }
 
-
-// Neues Projekt erstellen
-
-const newProjectBtn = document.getElementById("new-project-btn") as HTMLButtonElement
-newProjectBtn? newProjectBtn.addEventListener("click", () => {
-    toggleModal("new-project-modal")})
-    :console.warn("New projects button was not found...")
-
-const newProjectForm = document.getElementById("new-project-form") as HTMLFormElement;
-const cancelProjectAddBtn = document.getElementById("cancel-project-btn") as HTMLButtonElement;
-
-if (newProjectForm && newProjectForm instanceof HTMLFormElement) {
-  newProjectForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const projectData = getProjectFormData(newProjectForm)
-
-    try {
-      const project = projectsManager.newProject(projectData);
-      toggleModal("new-project-modal");
-      newProjectForm.reset();
-    } catch (err) {
-      errorPopUp(err)
-    }
-  })
-
-  const errorBtn = document.getElementById("error-dialog-btn") as HTMLButtonElement
-  errorBtn?.addEventListener("click", (e) => {
-    e.preventDefault();
-    toggleModal("error-dialog");
-  })
-
-  cancelProjectAddBtn?.addEventListener("click", (e) => {
-    e.preventDefault();
-    toggleModal("new-project-modal");
-  })
-} else {
-  console.warn("The project form was not found. Check the ID!");
-}
+const errorBtn = document.getElementById("error-dialog-btn") as HTMLButtonElement
+errorBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  toggleModal("error-dialog");
+})
 
 
 // Edit Project in the Details Page

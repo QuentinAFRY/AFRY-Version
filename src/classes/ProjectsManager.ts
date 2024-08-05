@@ -2,11 +2,9 @@ import { IProject, Project, BusinessUnit, ProjectStatus } from "./Project"
 
 export class ProjectsManager {
   list: Project[] = []
-  ui: HTMLElement
   activeProjectId: string
 
-  constructor(container: HTMLElement) {
-    this.ui = container
+  constructor() {
     const project = this.newProject({
       name: "Viewer Project" as string,
       acronym: "TEST" as string,
@@ -16,7 +14,6 @@ export class ProjectsManager {
       finishDate: new Date(),
       progress: 20 as number,
     })
-    project.ui.click()
   }
 
   getProjectList () {
@@ -48,7 +45,6 @@ export class ProjectsManager {
       this.setDetailsPageTasks()
     })
 
-    this.ui.append(project.ui)
     this.list.push(project)
     return project
   }
@@ -163,7 +159,7 @@ export class ProjectsManager {
       progress: 20 as number,
     }
     this.newProject(data)
-    this.ui.click()
+    // this.ui.click()
   }
   
   updateProjectData(project, newData: Partial<Project>) {
