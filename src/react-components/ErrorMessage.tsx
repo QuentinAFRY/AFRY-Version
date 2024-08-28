@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export function ErrorMessage({message}: {message: string}) {
+export function ErrorMessage() {
 
     const spanStyle: React.CSSProperties = {
         padding: "0 10px",
