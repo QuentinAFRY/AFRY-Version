@@ -32,14 +32,14 @@ export class Project implements IProject {
 
   tasks: ProjectTask[] = []
 
-  constructor(data: IProject) {
+  constructor(data: IProject, id = uuidv4()) {
     for (const key in data) {
       this[key] = data[key]
     }
     if (typeof this.finishDate == "string") {this.finishDate = new Date(this.finishDate)}
     if (this.finishDate instanceof Date && isNaN(this.finishDate.getDate())) {this.finishDate = new Date()}
     if (this.name.length<5) {throw new Error(`The name "${this.name}" is invalid. Name must contain at least 5 characters`)}
-    if (!this.id) {this.id = uuidv4()}
+    this.id = id
     if (this.tasks != undefined) {
       const updateTasks = new Array
       for (const object of this.tasks) {

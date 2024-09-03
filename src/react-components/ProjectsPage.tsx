@@ -1,13 +1,18 @@
 import * as React from 'react';
 import * as Router from 'react-router-dom';
+import * as Firestore from 'firebase/firestore';
 import { Project, IProject, BusinessUnit, ProjectStatus } from "../classes/Project"
 import { ProjectsManager } from "../classes/ProjectsManager"
-import { errorPopUp } from '..';
+import { SearchBar } from './SearchBar';
 import { ProjectCard } from './ProjectCard';
+import { firebaseDB } from '../firebase';
+import { getCollection } from '../firebase';
 
 interface Props {
   projectsManager: ProjectsManager
 }
+
+const projectsCollection = getCollection<IProject>("/projects")
 
 export function ProjectsPage(props: Props) {
 
@@ -16,7 +21,26 @@ export function ProjectsPage(props: Props) {
 
   // Event Callbacks die eine State-Anderung triggern
   props.projectsManager.onProjectCreated = () => {setProjects([...props.projectsManager.list])}
-  props.projectsManager.onProjectDeleted = () => {setProjects([...props.projectsManager.list])}
+
+  const getFirestoreProjects = async () => {
+    const firebaseProjects = await Firestore.getDocs(projectsCollection)
+    for (const doc of firebaseProjects.docs) {
+      const data = doc.data()
+      const project: IProject = {
+        ...data,
+        finishDate: (data.finishDate as unknown as Firestore.Timestamp).toDate()
+      }
+      try {
+        props.projectsManager.newProject(project, doc.id)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }
+
+  React.useEffect(() => {
+    getFirestoreProjects()
+  }, [])
 
   // Wert der die aktuellen Projekt Cards enthält - mit dem Key der Projekt ID
   const projectCards = projects.map((project) => {
@@ -79,6 +103,7 @@ export function ProjectsPage(props: Props) {
       const projectData = getProjectFormData(newProjectForm)
 
       try {
+          Firestore.addDoc(projectsCollection, projectData)
           const project = props.projectsManager.newProject(projectData);
           console.log()
           const modal = document.getElementById("new-project-modal")
@@ -86,8 +111,12 @@ export function ProjectsPage(props: Props) {
           modal.close()
           newProjectForm.reset();
       } catch (err) {
-          errorPopUp(err)
+          console.log(err)
       }
+  }
+
+  const onProjectSearch = (value: string) => {
+    setProjects(props.projectsManager.filterProjects(value))
   }
   
   return (
@@ -223,6 +252,7 @@ export function ProjectsPage(props: Props) {
       </dialog>
       <header>
         <h2>Projects</h2>
+        <SearchBar onChange={(value) => onProjectSearch(value)}/>
         <div style={{ display: "flex", gap: 20 }}>
           <span onClick={onImportProjects}
             style={{ border: "solid 1px var(--primary-grey-200)" }}
@@ -245,7 +275,9 @@ export function ProjectsPage(props: Props) {
           </button>
         </div>
       </header>
-      <div id="projects-list"> { projectCards }</div>
+      {
+        projects.length > 0 ? <div id="projects-list">{ projectCards }</div> : <p>No projects found</p>
+      }
     </div>      
   )
 }

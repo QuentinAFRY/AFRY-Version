@@ -56,6 +56,10 @@ h5 {
   font-size: 16px;
 }
 
+a {
+  text-decoration: none;
+}
+
 label {
   font-size: var(--font-style-S);
   margin-bottom: 5px;
@@ -163,6 +167,7 @@ select {
   border: 1px solid var(--primary-green-200);
   border-radius: 8px;
   cursor: pointer;
+  color: var(--primary-beige);
 }
 
 .project-card:hover {

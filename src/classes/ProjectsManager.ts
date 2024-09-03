@@ -4,25 +4,13 @@ export class ProjectsManager {
   list: Project[] = []
   activeProjectId: string
   onProjectCreated = (project: Project) => {}
-  onProjectDeleted = (project: Project) => {}
-
-  constructor() {
-    const project = this.newProject({
-      name: "Viewer Project" as string,
-      acronym: "TEST" as string,
-      description: "Project description goes here..." as string,
-      businessUnit: "Transportation" as BusinessUnit,
-      projectStatus: "Finished" as ProjectStatus,
-      finishDate: new Date(),
-      progress: 20 as number,
-    })
-  }
+  onProjectDeleted = (id: string) => {}
 
   getProjectList () {
     return this.list
   }
   
-  newProject(data: IProject) {
+  newProject(data: IProject, id?: string) {
     const projectNames = this.list.map((project) => {
       return project.name
     })
@@ -31,14 +19,25 @@ export class ProjectsManager {
       throw new Error (`A Project with the name "${data.name}" already exists`)
     }
 
+    if (!data.acronym) {
+      data.acronym = data.name.slice(0, 4).toUpperCase()
+    }
+
     if (data.acronym.length != 4) {
       throw new Error (`The acronym "${data.acronym}" is invalid. It must consist of 4 letters`)
     }
     
-    const project = new Project(data)
+    const project = new Project(data, id)
     this.list.push(project)
     this.onProjectCreated(project)
     return project
+  }
+
+  filterProjects(value: string) {
+    const filteredProjects = this.list.filter((project) => {
+      return project.name.includes(value)
+    })
+    return filteredProjects
   }
 
   // private setDetailsPage(project: Project) {
@@ -194,7 +193,7 @@ export class ProjectsManager {
     if (!project) {return}
     const remaining = this.list.filter((project) => project.id !== id)
     this.list = remaining
-    this.onProjectDeleted(project)
+    this.onProjectDeleted(id)
   }
 
   getProjectByName(name: string) {

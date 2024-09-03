@@ -2,6 +2,7 @@ import * as React from 'react'
 import * as Router from 'react-router-dom'
 
 export function Sidebar() {
+
     return (
     <aside id="sidebar">
         <img id="company-logo" src="./Assets/AFRY_Logotype_Horizontal (1).svg" alt="Construction Company"/>

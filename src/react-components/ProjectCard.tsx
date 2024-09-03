@@ -9,7 +9,7 @@ interface Props {
 export function ProjectCard(props: Props) {
 
     return (
-            <div className='project-card'>
+        <div className='project-card'>
             <div className="card-header">
                 <div className="card-logo" style={{ backgroundColor: "${this.logoColor}" }}>
                 <p>{props.project.acronym}</p>
@@ -34,7 +34,6 @@ export function ProjectCard(props: Props) {
                 </div>
                 <div className="card-property">
                 <p style={{ color: "#969696" }}>Contact Person</p>
-                <a href="#">{props.project.contactPerson}</a>
                 </div>
                 <div className="card-property">
                 <p style={{ color: "#969696" }}>Estimated Progress</p>
