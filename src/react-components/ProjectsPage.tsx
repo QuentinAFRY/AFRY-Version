@@ -30,6 +30,8 @@ export function ProjectsPage(props: Props) {
         ...data,
         finishDate: (data.finishDate as unknown as Firestore.Timestamp).toDate()
       }
+      const id = doc.id
+      if (props.projectsManager.list.find(p => p.id === id)) {continue}
       try {
         props.projectsManager.newProject(project, doc.id)
       } catch (error) {

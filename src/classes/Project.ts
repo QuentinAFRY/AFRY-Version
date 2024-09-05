@@ -134,10 +134,8 @@ export class Project implements IProject {
     console.log(this.tasks)
   }
 
-  newTask(data: IProjectTask, container: HTMLDivElement) {
+  addTask(data: IProjectTask) {
     const newTask = new ProjectTask(data)
-    const taskContainer = container
-    taskContainer.append(newTask.ui)
     this.tasks.push(newTask)
   }
 }

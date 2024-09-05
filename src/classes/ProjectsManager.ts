@@ -1,4 +1,5 @@
 import { IProject, Project, BusinessUnit, ProjectStatus } from "./Project"
+import * as Firestore from "firebase/firestore"  
 
 export class ProjectsManager {
   list: Project[] = []
@@ -139,21 +140,24 @@ export class ProjectsManager {
   //   }
   // }
 
-  defaultProject = () => {
-    const data: IProject = {
-      name: "Example Project" as string,
-      acronym: "TEST" as string,
-      description: "Project description goes here..." as string,
-      businessUnit: "Transportation" as BusinessUnit,
-      projectStatus: "Finished" as ProjectStatus,
-      finishDate: new Date(),
-      progress: 20 as number,
+  updateProjects(firebaseProjects: Firestore.QuerySnapshot<IProject, Firestore.DocumentData>, newData: Partial<Project>) {
+    for (const doc of firebaseProjects.docs) {
+      const data = doc.data()
+      const project: IProject = {
+        ...data,
+        finishDate: (data.finishDate as unknown as Firestore.Timestamp).toDate()
+      }
+      try {
+        this.updateProjectData(project, doc.id)
+      } catch (error) {
+        console.log(error)
+      }
     }
-    this.newProject(data)
-    // this.ui.click()
   }
   
-  updateProjectData(project, newData: Partial<Project>) {
+  async updateProjectData(newData: Partial<Project>, id: string) {
+    const project = this.getProject(id)
+    if (!project) {return}
     for (const key in newData) {
       if (newData.hasOwnProperty(key) && project[key]) {
         project[key] = newData[key]
@@ -161,7 +165,6 @@ export class ProjectsManager {
         if (typeof newData.acronym =="string" && newData.acronym.length!=4) {throw new Error(`The acronym "${newData.acronym}" is invalid. It must consist of 4 letters`)}
       }
     }
-    // this.setDetailsPage(project)
   }
 
   updateByImport(project, newData: Partial<Project>) {
@@ -185,6 +188,7 @@ export class ProjectsManager {
 
   getProject(id: string) {
     const project = this.list.find((project) => project.id === id)
+    if (!project) {return}
     return project
   }
 

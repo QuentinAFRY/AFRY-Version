@@ -20,6 +20,10 @@ export function getCollection<T>(path: string) {
   return Firestore.collection(firebaseDB, path) as Firestore.CollectionReference<T>;
 }
 
+export function getDocument<T>(path: string, id: string) {
+  return Firestore.doc(firebaseDB, `${path}/${id}`) as Firestore.DocumentReference<T>;
+}
+
 export async function deleteDocument(path: string, id: string) {
   const doc = Firestore.doc(firebaseDB, `${path}/${id}`)
   await Firestore.deleteDoc(doc);

@@ -285,6 +285,13 @@ select {
   cursor: pointer;
 }
 
+#task-list {
+  display: "flex";
+  flex-direction: "column";
+  gap: 15;
+  padding: 10
+}
+
 #add-task-btn:hover {
   scale: 1.2;
   cursor: pointer;

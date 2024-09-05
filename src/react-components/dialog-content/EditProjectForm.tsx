@@ -1,23 +1,15 @@
 import * as React from 'react';
 import { IProject, Project } from '../../classes/Project';
 import { updateDocument } from '../../firebase';
-
-function dateToReact(date: Date): string {
-    const year = date.getFullYear()
-    const month = date.getMonth().toString().padStart(2, "0")
-    const day = date.getDay().toString().padStart(2, "0")
-    const formatedDate = `${year}-${month}-${day}`
-    return formatedDate
-}
+import { ProjectsManager } from '../../classes/ProjectsManager';
+import { dateToReact } from '../../lib/utils';
 
 interface Props {
     project: Project,
-    onCloseButtonClick: () => void,
-    show: any
+    passFormData: (newProjectData: IProject) => Promise<void>
 }
 
 export function EditProjectForm(props: Props) {
-    if(!props.show) {return null}
 
     const [formValues, setFormValues] = React.useState({
         name: props.project.name,
@@ -25,7 +17,7 @@ export function EditProjectForm(props: Props) {
         description: props.project.description,
         businessUnit: props.project.businessUnit,
         projectStatus: props.project.projectStatus,
-        finishDate: props.project.finishDate,
+        finishDate: props.project.finishDate instanceof Date ? dateToReact(props.project.finishDate) : props.project.finishDate,
         progress: props.project.progress
     })
 
@@ -37,15 +29,22 @@ export function EditProjectForm(props: Props) {
         })
     }
 
-    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        console.log(formValues)
-        updateDocument<Partial<IProject>>("/projects", props.project.id, formValues)
-        props.onCloseButtonClick()
+    const handleSubmit = () => {
+        const formValuesCopy = {...formValues}
+        const project: IProject = {
+            name: formValuesCopy.name,
+            acronym: formValuesCopy.acronym,
+            description: formValuesCopy.description,
+            businessUnit: formValuesCopy.businessUnit,
+            projectStatus: formValuesCopy.projectStatus,
+            finishDate: new Date(formValuesCopy.finishDate),
+            progress: formValuesCopy.progress
+        }
+        props.passFormData(project)
     }
 
     return(
-        <form id="edit-project-form" onSubmit={onSubmit}>
+        <form id="edit-project-form" onSubmit={(e)=> e.preventDefault()}>
             <p className="form-title">Edit Project</p>
             <div className="form-main">
             <div className="form-basic-container">
@@ -145,7 +144,7 @@ export function EditProjectForm(props: Props) {
                     name="finishDate" 
                     type="date" 
                     className="form-input-other" 
-                    value={dateToReact(formValues.finishDate)}
+                    value={formValues.finishDate}
                     onChange={handleChange}/>
                 <label className="form-input-label">
                     <span className="material-icons-sharp"> calendar_month </span>
@@ -176,7 +175,6 @@ export function EditProjectForm(props: Props) {
             <div className="form-button-container">
                 <button
                 type="button"
-                onClick={() => {}} // Add onClick event
                 className="form-cancel-btn"
                 id="cancel-project-edit-btn"
                 >
@@ -184,6 +182,7 @@ export function EditProjectForm(props: Props) {
                 </button>
                 <button
                 type="submit"
+                onClick={handleSubmit}
                 className="form-accept-btn"
                 id="accept-project-edit-btn"
                 >
