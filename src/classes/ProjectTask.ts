@@ -21,8 +21,9 @@ export class ProjectTask implements IProjectTask{
     taskStatus: TaskStatus = "open"
 
     id: string
+    collapsed: boolean = false
 
-    constructor(info: IProjectTask) {
+    constructor(info: IProjectTask, id = uuidv4()) {
         for (const key in info) {
             this[key] = info[key]
         }

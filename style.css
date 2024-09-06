@@ -286,11 +286,20 @@ select {
 }
 
 #task-list {
-  display: "flex";
-  flex-direction: "column";
-  gap: 15;
-  padding: 10
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 10px
 }
+
+.task-description {
+  flex-direction: row;
+  justify-content: space-between;
+  column-gap: 1rem; 
+  padding-top: 1rem;
+}
+
+
 
 #add-task-btn:hover {
   scale: 1.2;

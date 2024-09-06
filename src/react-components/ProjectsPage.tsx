@@ -7,6 +7,7 @@ import { SearchBar } from './SearchBar';
 import { ProjectCard } from './ProjectCard';
 import { firebaseDB } from '../firebase';
 import { getCollection } from '../firebase';
+import { IProjectTask, ProjectTask } from '../classes/ProjectTask';
 
 interface Props {
   projectsManager: ProjectsManager
@@ -34,11 +35,36 @@ export function ProjectsPage(props: Props) {
       if (props.projectsManager.list.find(p => p.id === id)) {continue}
       try {
         props.projectsManager.newProject(project, doc.id)
+        const projectReference = props.projectsManager.getProject(doc.id)
+        if (projectReference) {getProjectTasks(projectReference)}
       } catch (error) {
         console.log(error)
       }
     }
   }
+
+  const getProjectTasks = async (projectReference: Project) => {
+      const taskCollection = getCollection<IProjectTask>(`/projects/${projectReference.id}/tasks`)
+      if (!taskCollection) {return}
+      const projectTasks = await Firestore.getDocs(taskCollection)
+      for (const doc of projectTasks.docs) {
+        const data = doc.data()
+        const task: IProjectTask = {
+          ...data,
+          finishDate: (data.finishDate as unknown as Firestore.Timestamp).toDate(),
+          creationDate: (data.creationDate as unknown as Firestore.Timestamp).toDate()
+        }
+        const id = doc.id
+        if (projectReference.tasks.find(t => t.id === id)) {continue}
+        try {
+          projectReference.addTask(task, doc.id)
+        } catch (error) {
+          console.log(error)
+      }
+    }
+  }
+
+  
 
   React.useEffect(() => {
     getFirestoreProjects()

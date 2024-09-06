@@ -134,8 +134,8 @@ export class Project implements IProject {
     console.log(this.tasks)
   }
 
-  addTask(data: IProjectTask) {
-    const newTask = new ProjectTask(data)
+  addTask(data: IProjectTask, id?: string) {
+    const newTask = new ProjectTask(data, id)
     this.tasks.push(newTask)
   }
 }

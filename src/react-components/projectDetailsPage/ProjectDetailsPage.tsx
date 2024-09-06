@@ -6,10 +6,9 @@ import { ProjectTasks } from './ProjectTasks';
 import { IFCViewer } from './IFCViewer';
 import { EditProjectForm } from '../dialog-content/EditProjectForm';
 import { deleteDocument, updateDocument } from '../../firebase';
-import { AddTaskForm } from '../dialog-content/AddTaskForm';
 import { IProject, Project } from '../../classes/Project';
-import { getDocument } from '../../firebase';
-import { sub } from 'three/examples/jsm/nodes/Nodes.js';
+import { ProjectTaskCard } from './ProjectTaskCard';
+import { NoTasksCard } from './NoTasksCard';
 
 interface Props {
   projectsManager: ProjectsManager
@@ -23,10 +22,22 @@ export function ProjectDetailsPage(props: Props) {
   if (!currentProject) {return <div>Project not found</div>}
 
   const [projectState, setProject] = React.useState<Project>(currentProject)
+  console.log("Project state:", projectState)
   
   const [dialogContent, setDialogContent] = React.useState<React.JSX.Element | null>(null);
   const dialogRef = React.useRef<HTMLDialogElement | null>(null)
 
+  const renderTaskCards = (): React.JSX.Element | React.JSX.Element[] => {
+    if (projectState.tasks.length === 0) {
+      console.log("Test 2: ", projectState.tasks.length)
+      return <NoTasksCard />
+      }
+      console.log("Test 1: ", projectState.tasks.length)
+      return projectState.tasks.map((task) => {
+        return <ProjectTaskCard key={task.id} task={task} />
+    })
+  }
+  const taskCards = renderTaskCards()
 
   const submitEditProjectForm = async (newProjectData: IProject) => {
     try {
@@ -63,6 +74,8 @@ export function ProjectDetailsPage(props: Props) {
     navigateTo("/")
   }
 
+  
+
   return(
     <>
       <dialog ref={dialogRef}>
@@ -79,7 +92,9 @@ export function ProjectDetailsPage(props: Props) {
         <div className="main-page-content">
           <div style={{ display: "flex", flexDirection: "column", rowGap: 30 }}>
             <ProjectDetails project={projectState} onEditButtonClick={openEditProjectDialog} />
-            <ProjectTasks project={projectState} openAddTaskModal={()=>{}}/>
+            <ProjectTasks>
+              {taskCards}
+            </ProjectTasks>
           </div>
           <IFCViewer />
         </div>

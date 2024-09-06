@@ -6,36 +6,10 @@ import { ProjectTask } from '../../classes/ProjectTask';
 import { getCollection } from '../../firebase';
 
 interface Props {
-  project: Project,
-  openAddTaskModal: () => void
+  children?: React.ReactNode,
 }
 
 export function ProjectTasks(props: Props) {
-
-  const taskCollection = getCollection<ProjectTask>(`projects/${props.project.id}/tasks`)
-
-  const getFirestoreTasks = async () => {
-    const firebaseTasks = await Firestore.getDocs(taskCollection)
-
-    for (const doc of firebaseTasks.docs) {
-      const data = doc.data()
-      const task: ProjectTask = {
-        ...data,
-        finishDate: (data.finishDate as unknown as Firestore.Timestamp).toDate(),
-        creationDate: (data.creationDate as unknown as Firestore.Timestamp).toDate()
-      }
-      try {
-        props.project.addTask(task)
-        console.log(task)
-      } catch (error) {
-        console.error("Error adding task to project:", error)
-      }
-    }
-  }
-
-  React.useEffect(() => {
-    getFirestoreTasks()
-  }, [])
 
   return(
     <div
@@ -63,7 +37,6 @@ export function ProjectTasks(props: Props) {
           />
           <button
             id="add-task-btn"
-            onClick={props.openAddTaskModal}
             style={{
               background: "transparent",
               border: "none",
@@ -81,9 +54,9 @@ export function ProjectTasks(props: Props) {
           </button>
         </div>
       </div>
-      {
-        props.project.tasks.length > 0 ? <div id="task-list"> Task Placeholder </div> : <p>No tasks found</p>
-      }
+      <div id='task-list'>
+        {props.children}
+      </div>
     </div>
     )
 }
