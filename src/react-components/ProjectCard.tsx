@@ -1,9 +1,22 @@
 import * as React from 'react';
 import * as Router from 'react-router-dom';
 import { Project } from '../classes/Project';
+import { color } from 'three/examples/jsm/nodes/Nodes.js';
 
 interface Props {
     project: Project
+}
+
+const keyStyle: React.CSSProperties = {
+    fontWeight: 300,
+    fontSize: "var(--font-style-S)",
+    color: "var(--primary-white)"
+}
+
+const valueStyle: React.CSSProperties = {
+    fontWeight: 500,
+    fontSize: "var(--font-style-S)",
+    color: "var(--primary-beige)"
 }
 
 export function ProjectCard(props: Props) {
@@ -21,23 +34,24 @@ export function ProjectCard(props: Props) {
             </div>
             <div className="card-content">
                 <div className="card-property">
-                <p style={{ color: "#969696" }}>Status</p>
-                <p>{props.project.projectStatus}</p>
+                <p style={keyStyle}>Status</p>
+                <p style={valueStyle}>{props.project.projectStatus}</p>
                 </div>
                 <div className="card-property">
-                <p style={{ color: "#969696" }}>Business Unit</p>
-                <p>{props.project.businessUnit}</p>
+                <p style={keyStyle}>Business Unit</p>
+                <p style={valueStyle}>{props.project.businessUnit}</p>
                 </div>
                 <div className="card-property">
-                <p style={{ color: "#969696" }}>Cost</p>
-                <p>${props.project.cost}</p>
+                <p style={keyStyle}>Cost</p>
+                <p style={valueStyle}>${props.project.cost}</p>
                 </div>
                 <div className="card-property">
-                <p style={{ color: "#969696" }}>Contact Person</p>
+                <p style={keyStyle}>Contact Person</p>
+                <p style={valueStyle}>Quentin Thurow</p>
                 </div>
-                <div className="card-property">
-                <p style={{ color: "#969696" }}>Estimated Progress</p>
-                <p>{props.project.progress}%</p>
+                <div className="card-property" style={{borderBottom: 0}}>
+                <p style={keyStyle}>Estimated Progress</p>
+                <p style={valueStyle}>{props.project.progress}%</p>
                 </div>
             </div>
         </div>

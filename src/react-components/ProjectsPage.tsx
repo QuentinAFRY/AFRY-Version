@@ -8,6 +8,9 @@ import { ProjectCard } from './ProjectCard';
 import { firebaseDB } from '../firebase';
 import { getCollection } from '../firebase';
 import { IProjectTask, ProjectTask } from '../classes/ProjectTask';
+import { TodoCreator } from '../bim-components/TodoCreator';
+import { IProjectTaskFirestore } from './projectDetailsPage/ProjectDetailsPage';
+import { cameraToProject, fragmentMapToProject } from '../lib/utils';
 
 interface Props {
   projectsManager: ProjectsManager
@@ -36,28 +39,33 @@ export function ProjectsPage(props: Props) {
       try {
         props.projectsManager.newProject(project, doc.id)
         const projectReference = props.projectsManager.getProject(doc.id)
-        if (projectReference) {getProjectTasks(projectReference)}
+        if (projectReference) {getProjectTodos(projectReference)}
       } catch (error) {
         console.log(error)
       }
     }
   }
 
-  const getProjectTasks = async (projectReference: Project) => {
-      const taskCollection = getCollection<IProjectTask>(`/projects/${projectReference.id}/tasks`)
+  const getProjectTodos = async (projectReference: Project) => {
+      const taskCollection = getCollection<IProjectTaskFirestore>(`/projects/${projectReference.id}/tasks`)
       if (!taskCollection) {return}
       const projectTasks = await Firestore.getDocs(taskCollection)
       for (const doc of projectTasks.docs) {
         const data = doc.data()
+        if (!data) {continue}
+        const finishDate = data.finishDate ? (data.finishDate as unknown as Firestore.Timestamp).toDate() : new Date()
+        const creationDate = data.creationDate ? (data.creationDate as unknown as Firestore.Timestamp).toDate() : new Date()
         const task: IProjectTask = {
           ...data,
-          finishDate: (data.finishDate as unknown as Firestore.Timestamp).toDate(),
-          creationDate: (data.creationDate as unknown as Firestore.Timestamp).toDate()
+          finishDate: finishDate,
+          creationDate: creationDate,
+          fragmentMap: fragmentMapToProject(data.fragmentMap),
+          camera: cameraToProject(data.camera)
         }
         const id = doc.id
         if (projectReference.tasks.find(t => t.id === id)) {continue}
         try {
-          projectReference.addTask(task, doc.id)
+          projectReference.fetchTask(task, doc.id)
         } catch (error) {
           console.log(error)
       }

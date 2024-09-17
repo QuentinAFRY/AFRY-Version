@@ -3,9 +3,14 @@ import * as Router from 'react-router-dom'
 
 export function Sidebar() {
 
+    const [imageLoaded, setImageLoaded] = React.useState(false);
+    const handleLoadImage = () => {
+        setImageLoaded(true);
+    }
+
     return (
     <aside id="sidebar">
-        <img id="company-logo" src="./Assets/AFRY_Logotype_Horizontal (1).svg" alt="Construction Company"/>
+        <img id="company-logo" onLoad={handleLoadImage} src="./Assets/AFRY_Logotype_Horizontal (1).svg" alt="Construction Company"/>
         <ul id="nav-buttons">
             <Router.Link to="/">
                 <li id="side-bar-projects"><span className="material-icons-sharp"> location_city </span> Projects</li>

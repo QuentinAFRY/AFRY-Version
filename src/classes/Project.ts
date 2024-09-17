@@ -29,6 +29,9 @@ export class Project implements IProject {
   id: string
   progress: number = 0.15
   contactPerson: string = "Quentin Hamm"
+  onTaskAdded = (task: IProjectTask, tempId: string) => {}
+  onTaskUpdated = (data: IProjectTask) => {}
+  onTaskDeleted = (id: string) => {}
 
   tasks: ProjectTask[] = []
 
@@ -40,14 +43,14 @@ export class Project implements IProject {
     if (this.finishDate instanceof Date && isNaN(this.finishDate.getDate())) {this.finishDate = new Date()}
     if (this.name.length<5) {throw new Error(`The name "${this.name}" is invalid. Name must contain at least 5 characters`)}
     this.id = id
-    if (this.tasks != undefined) {
-      const updateTasks = new Array
-      for (const object of this.tasks) {
-        const task = new ProjectTask(object)
-        updateTasks.push(task)
-      }
-      this.tasks = updateTasks
-      }
+    // if (this.tasks != undefined) {
+    //   const updateTasks = new Array
+    //   for (const object of this.tasks) {
+    //     const task = new ProjectTask(object)
+    //     updateTasks.push(task)
+    //   }
+    //   this.tasks = updateTasks
+    //   }
   }
 
 
@@ -130,12 +133,48 @@ export class Project implements IProject {
   //   }
   // }
 
-  printTaskContainer() {
-    console.log(this.tasks)
+  createTask(data: IProjectTask) {
+    const tempId = data.id
+    console.log("Task ID: ", data.id)
+    if(!tempId) {console.error("Task id is missing"); return}
+    const newTask = new ProjectTask(data, tempId)
+    const taskIDs = this.tasks.map(task => task.id)
+    if (taskIDs.includes(tempId)) {return console.error(`Task with id ${tempId} already exists`)}
+    this.tasks.push(newTask)
+    this.onTaskAdded(newTask as IProjectTask, tempId)
   }
 
-  addTask(data: IProjectTask, id?: string) {
+  fetchTask(data: IProjectTask, id: string) {
     const newTask = new ProjectTask(data, id)
+    const taskIDs = this.tasks.map(task => task.id)
+    if (taskIDs.includes(id)) {return console.error(`Task with id ${id} already exists`)}
     this.tasks.push(newTask)
+  }
+
+  updateTask(data: Partial<IProjectTask>, id: string) {
+    const task = this.tasks.find(task => task.id === id)
+    if (task) {
+      for (const key in data) {
+        task[key] = data[key]
+      }
+      this.onTaskUpdated(task as IProjectTask)
+    } else {
+      console.error(`Task with id ${id} not found`)
+    }
+  }
+
+  deleteTask(id: string) {
+    const index = this.tasks.findIndex(task => task.id === id)
+    if (index !== -1) {
+      const task = this.tasks[index]
+      this.tasks.splice(index, 1)
+      this.onTaskDeleted(task.id)
+    }
+  }
+
+  getTask(id: string): ProjectTask | undefined {
+    const task = this.tasks.find(task => task.id === id)
+    if (!task) {console.error(`Task with id ${id} not found`); return}
+    return task
   }
 }

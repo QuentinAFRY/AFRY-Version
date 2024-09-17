@@ -28,6 +28,12 @@
   --primary-grey-300: #b2b2b2;
   --primary-grey-400: #d0d0d0;
   --primary-grey-500: #f8f8f8;
+  --Draft-Lightblue: #7d8ab136;
+  --Draft-Blue: #4c5e95;
+  --Draft-Darkblue: #7d8ab1;
+  --Draft-Darkblue-rgb: 125, 138, 177;
+  --Draft-Greywhite: #fbf7f4;
+  --Draft-Greywhite-rgb: 251, 247, 244;
   --task-open: #26282b;
   --task-in-progress: #ffce4a85;
   --task-finished: #36733d85;
@@ -41,8 +47,8 @@
   grid-template-columns: 300px 1fr;
   grid-template-areas: 'sidebar content';
   height: 100vh;
-  background-color: var(--primary-black);
-  color: var(--primary-white);
+  background-color: var(--Draft-Lightblue);
+  color: var(--primary-black);
 }
 
 header {
@@ -105,7 +111,7 @@ select {
 
 /* Sidebar Styles... */
 #sidebar {
-  background-color: var(--primary-green-200);
+  background-color: var(--Draft-Darkblue);
   border-top-right-radius: 20px;
   border-bottom-left-radius: 20px;
   padding: 25px;
@@ -158,12 +164,12 @@ select {
 #projects-list {
   padding: 20px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 0.3fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 0.2fr));
   gap: 1vh;
 }
 
 .project-card {
-  background-color: var(--primary-green-100);
+  background-color: var(--Draft-Blue);
   border: 1px solid var(--primary-green-200);
   border-radius: 8px;
   cursor: pointer;
@@ -177,10 +183,11 @@ select {
 .card-header {
   display: grid;
   grid-template-columns: 80px 1fr;
-  padding: 15px 20px;
-  justify-content: start;
-  border-bottom: 2px solid var(--primary-green-300);
-  height: 60px;
+  padding: 5px 15px;
+  justify-items: center;
+  border-bottom: 3px solid rgba(var(--Draft-Greywhite-rgb), 0.3);
+  height: 70px;
+  align-items: center;
 }
 
 .card-logo {
@@ -189,8 +196,8 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 60px;
-  height: 60px;
+  width: 55px;
+  height: 50px;
 }
 
 .card-header p {
@@ -228,10 +235,11 @@ select {
 }
 
 .card-property {
+  border-bottom: 1px solid rgba(var(--Draft-Darkblue-rgb), 1);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 5px;
+  padding: 5px 5px;
 }
 
 .card-property a {
@@ -246,10 +254,19 @@ select {
 
 /* Project Details Page Styles... */
 .dashboard-card {
-  background-color: var(--primary-grey-100);
+  background-color: var(--Draft-Greywhite);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 0 4px var(--primary-grey-300);
+}
+
+.detailsProjectStats {
+  /* border: 1px solid var(--Draft-Darkblue); */
+  box-shadow: 0 1px 4px var(--Draft-Blue);
+  padding: 4px;
+  border-radius: 9px;
+  width:fit-content 100%;
 }
 
 #project-details > .main-page-content {
@@ -262,8 +279,7 @@ select {
 
 .dashboard-card > div {
   border-radius: 5px;
-  margin: 10px 0;
-  padding: 0px 30px;
+  padding: 10px 30px;
   display: flex;
   flex-direction: row;
   font-size: var(--font-style-XS);
@@ -299,6 +315,11 @@ select {
   padding-top: 1rem;
 }
 
+.todo-card-viewer {
+    white-space: normal; /* Ensure normal text wrapping */
+    word-break: break-word; /* Break long words if needed */
+    overflow-wrap: break-word; /* Allows words to break at the end of the line */
+}
 
 
 #add-task-btn:hover {

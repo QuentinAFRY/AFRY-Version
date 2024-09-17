@@ -35,6 +35,10 @@ export class UnitGetter extends OBC.Component<QtoUnits> implements OBC.UI, OBC.D
 
         const fragmentID = Object.keys(fragmentIdMap)[0];
         const fragment = fragmentManager.list[fragmentID];
+        if (!fragment) {
+            console.error("Fragment not found. Aborting unit extraction. - Load the matching model first.");
+            return
+        }
         const model = fragment.mesh.parent;
         if (!(model instanceof FragmentsGroup)) return;
 

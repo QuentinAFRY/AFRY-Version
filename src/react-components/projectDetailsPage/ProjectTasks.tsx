@@ -31,7 +31,7 @@ export function ProjectTasks(props: Props) {
             style={{
               height: 5,
               width: 200,
-              backgroundColor: "var(--primary-grey-300)",
+              backgroundColor: "var(--primary-white)",
               cursor: "zoom-out"
             }}
           />
@@ -40,7 +40,7 @@ export function ProjectTasks(props: Props) {
             style={{
               background: "transparent",
               border: "none",
-              color: "var(--primary-white)",
+              color: "var(--primary-black)",
               display: "flex"
             }}
           >

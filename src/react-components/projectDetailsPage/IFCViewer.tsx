@@ -4,10 +4,16 @@ import { FragmentsGroup, IfcProperties } from "bim-fragment";
 import { fragImportHandler } from "../../classes/fragImport/fragImporter";
 import { TodoCreator } from "../../bim-components/TodoCreator";
 import { SimpleQTO } from '../../bim-components/SimpleQTO/index';
+import { ProjectsManager } from '../../classes/ProjectsManager';
 
 interface IViewerContext {
   viewer: OBC.Components | null
   setViewer: (viewer: OBC.Components | null) => void
+}
+
+interface Props {
+  projectsManager: ProjectsManager
+  projectID: string,
 }
 
 export const ViewerContext = React.createContext<IViewerContext>({
@@ -24,7 +30,7 @@ export function ViewerProvider( props: { children: React.ReactNode }) {
   )
 }
 
-export function IFCViewer() {
+export function IFCViewer(props: Props) {
 
   const { setViewer } = React.useContext(ViewerContext)
 
@@ -188,8 +194,8 @@ export function IFCViewer() {
       }, 1000)
     })
 
-    const todoCreator = new TodoCreator(viewer)
-    todoCreator.setup()
+    const todoCreator = new TodoCreator(viewer, props.projectsManager)
+    todoCreator.setup(props.projectID)
 
     const simpleQto = new SimpleQTO(viewer)
     simpleQto.setup()
