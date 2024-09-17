@@ -27,7 +27,7 @@ export class Project implements IProject {
   logoColor: string
   cost: number = 0
   id: string
-  progress: number = 0.15
+  progress: number
   contactPerson: string = "Quentin Hamm"
   onTaskAdded = (task: IProjectTask, tempId: string) => {}
   onTaskUpdated = (data: IProjectTask) => {}
@@ -43,14 +43,6 @@ export class Project implements IProject {
     if (this.finishDate instanceof Date && isNaN(this.finishDate.getDate())) {this.finishDate = new Date()}
     if (this.name.length<5) {throw new Error(`The name "${this.name}" is invalid. Name must contain at least 5 characters`)}
     this.id = id
-    // if (this.tasks != undefined) {
-    //   const updateTasks = new Array
-    //   for (const object of this.tasks) {
-    //     const task = new ProjectTask(object)
-    //     updateTasks.push(task)
-    //   }
-    //   this.tasks = updateTasks
-    //   }
   }
 
 

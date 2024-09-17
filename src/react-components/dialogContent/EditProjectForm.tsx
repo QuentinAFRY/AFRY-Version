@@ -6,7 +6,8 @@ import { dateToReact } from '../../lib/utils';
 
 interface Props {
     project: Project,
-    passFormData: (newProjectData: IProject) => Promise<void>
+    passFormData: (newProjectData: IProject) => Promise<void>,
+    handleCancel: () => void
 }
 
 export function EditProjectForm(props: Props) {
@@ -38,7 +39,7 @@ export function EditProjectForm(props: Props) {
             businessUnit: formValuesCopy.businessUnit,
             projectStatus: formValuesCopy.projectStatus,
             finishDate: new Date(formValuesCopy.finishDate),
-            progress: formValuesCopy.progress
+            progress: formValuesCopy.progress = 0 ? 1 : formValuesCopy.progress
         }
         props.passFormData(project)
     }
@@ -174,6 +175,7 @@ export function EditProjectForm(props: Props) {
             <div style={{ borderBottom: "1px solid var(--primary-grey-200)" }} />
             <div className="form-button-container">
                 <button
+                onClick={props.handleCancel}
                 type="button"
                 className="form-cancel-btn"
                 id="cancel-project-edit-btn"

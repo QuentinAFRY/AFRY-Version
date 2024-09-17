@@ -3,9 +3,8 @@ import * as React from "react";
 import * as ReactDOM from "react-dom/client";
 import * as Router from "react-router-dom";
 import { Sidebar } from "./react-components/Sidebar";
-import { ProjectsPage } from "./react-components/ProjectsPage";
+import { ProjectsPage } from "./react-components/projectsPage/ProjectsPage";
 import { ProjectsManager } from "./classes/ProjectsManager"
-import { IProjectTask, TaskLogo, TaskStatus } from "./classes/ProjectTask"
 import { ProjectDetailsPage } from "./react-components/projectDetailsPage/ProjectDetailsPage";
 import { ViewerProvider } from "./react-components/projectDetailsPage/IFCViewer";
 

@@ -1,16 +1,14 @@
 import * as React from 'react';
 import * as Router from 'react-router-dom';
 import * as Firestore from 'firebase/firestore';
-import { Project, IProject, BusinessUnit, ProjectStatus } from "../classes/Project"
-import { ProjectsManager } from "../classes/ProjectsManager"
+import { Project, IProject, BusinessUnit, ProjectStatus } from "../../classes/Project"
+import { ProjectsManager } from "../../classes/ProjectsManager"
 import { SearchBar } from './SearchBar';
 import { ProjectCard } from './ProjectCard';
-import { firebaseDB } from '../firebase';
-import { getCollection } from '../firebase';
-import { IProjectTask, ProjectTask } from '../classes/ProjectTask';
-import { TodoCreator } from '../bim-components/TodoCreator';
-import { IProjectTaskFirestore } from './projectDetailsPage/ProjectDetailsPage';
-import { cameraToProject, fragmentMapToProject } from '../lib/utils';
+import { getCollection } from '../../firebase';
+import { IProjectTask } from '../../classes/ProjectTask';
+import { IProjectTaskFirestore } from '../projectDetailsPage/ProjectDetailsPage';
+import { cameraToProject, fragmentMapToProject } from '../../lib/utils';
 
 interface Props {
   projectsManager: ProjectsManager
@@ -101,6 +99,7 @@ export function ProjectsPage(props: Props) {
   const getProjectFormData = (form: HTMLFormElement) => {
       const formData = new FormData(form);
       const formDate = new Date(formData.get("finishDate") as string)
+      const progress = Number(formData.get("progress"))
       
     
       const projectData: IProject = {
@@ -110,9 +109,10 @@ export function ProjectsPage(props: Props) {
         businessUnit: formData.get("businessUnit") as BusinessUnit,
         projectStatus: formData.get("projectStatus") as ProjectStatus,
         finishDate:  isNaN(formDate.getDate())? new Date() : formDate,
-        progress: Number(formData.get("progress") ?? 0)
+        progress: progress < 1 ? 1 : progress,
       }
-      return projectData 
+
+     return projectData 
   }
 
   const onImportProjects = () => {
@@ -137,12 +137,18 @@ export function ProjectsPage(props: Props) {
       e.preventDefault();
       const newProjectForm = document.getElementById("new-project-form") as HTMLFormElement;
       const projectData = getProjectFormData(newProjectForm)
+      console.log(projectData.progress)
+ 
 
       try {
-          Firestore.addDoc(projectsCollection, projectData)
           const project = props.projectsManager.newProject(projectData);
           console.log()
           const modal = document.getElementById("new-project-modal")
+          
+          Firestore.addDoc(projectsCollection, projectData).then((docRef) => {
+            project.id = docRef.id;
+            setProjects(props.projectsManager.list)
+          })
           if (!(modal && modal instanceof HTMLDialogElement)) {return}
           modal.close()
           newProjectForm.reset();
@@ -291,7 +297,7 @@ export function ProjectsPage(props: Props) {
         <SearchBar onChange={(value) => onProjectSearch(value)}/>
         <div style={{ display: "flex", gap: 20 }}>
           <span onClick={onImportProjects}
-            style={{ border: "solid 1px var(--primary-grey-200)" }}
+            style={{ border: "solid 1px var(--primary-grey-200)"}}
             id="import-projects-btn"
             className="material-symbols-outlined"
           >
@@ -299,9 +305,9 @@ export function ProjectsPage(props: Props) {
           </span>
           <span
             onClick={onExportProjects}
-            style={{ border: "solid 1px var(--primary-grey-200)" }}
-            id="export-projects-btn"
             className="material-symbols-outlined"
+            style={{ border: "solid 1px var(--primary-grey-200)"}} 
+            id="export-projects-btn"
           >
             {" "}
             download{" "}

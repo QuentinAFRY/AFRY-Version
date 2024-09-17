@@ -8,6 +8,10 @@ interface Props {
 
 export function ProjectDetails(props: Props) {
 
+    console.log("rerendered")
+
+    const progressWidth = props.project.progress > 0 ? props.project.progress : 1
+
     return (
         <div className="dashboard-card" style={{ padding: "0 0 20px 0" }}>
             <div className="dashboard-header" style={{ alignItems: "center", paddingBottom: 0 }}>
@@ -41,14 +45,14 @@ export function ProjectDetails(props: Props) {
                     border: "1px solid var(--primary-green-100)",
                     borderWidth: "1px 0 1px 1px",
                     borderRadius: "8px 0 0 8px",
-                    width: `${props.project.progress}%`,
+                    width: `${progressWidth}%`,
                     height: 25,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     textAlign: "center"
                 }}
-                >{props.project.progress}%</div>
+                >{props.project.progress > 10 ? `${props.project.progress}%`: ""}</div>
                 <div
                 data-project-info="progressContainer"
                 style={{
@@ -57,15 +61,14 @@ export function ProjectDetails(props: Props) {
                     border: "1px solid var(--primary-green-100)",
                     borderWidth: "1px 1px 1px 0",
                     borderRadius: "0 8px 8px 0",
-                    width: `${100 - props.project.progress}%`,
+                    width: `${100 - progressWidth}%`,
                     height: 25,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     textAlign: "center",
                     color: "var(--primary-black)"
-                }}
-                />
+                }}>{props.project.progress <= 10 ? `${props.project.progress}%`: ""}</div>
             </div>
             <div
                 style={{

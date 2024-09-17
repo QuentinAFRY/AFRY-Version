@@ -4,7 +4,7 @@ import { ProjectsManager } from '../../classes/ProjectsManager';
 import { ProjectDetails } from './ProjectDetails';
 import { ProjectTasks } from './ProjectTasks';
 import { IFCViewer } from './IFCViewer';
-import { EditProjectForm } from '../dialog-content/EditProjectForm';
+import { EditProjectForm } from '../dialogContent/EditProjectForm';
 import { deleteDocument, getCollection, updateDocument } from '../../firebase';
 import { IProject, Project } from '../../classes/Project';
 import { ProjectTaskCard } from './ProjectTaskCard';
@@ -100,6 +100,7 @@ export function ProjectDetailsPage(props: Props) {
   }
 
   const submitEditProjectForm = async (newProjectData: IProject) => {
+    console.log("test")
     try {
       await props.projectsManager.updateProjectData(newProjectData, projectState.id);
       await updateDocument<Partial<IProject>>("/projects", projectState.id, newProjectData);
@@ -123,6 +124,7 @@ export function ProjectDetailsPage(props: Props) {
       <EditProjectForm 
         project={projectState}
         passFormData={submitEditProjectForm}
+        handleCancel={() => dialogRef.current?.close()}
       />
     )
     dialogRef.current?.showModal()
