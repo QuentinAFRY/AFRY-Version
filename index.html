@@ -28,7 +28,7 @@
         </li>
         <li><span class="material-icons-sharp"> compost </span> LCA-Data</li>
         <li><span class="material-icons-sharp"> verified </span> Report</li>
-        <li><span class="material-icons-sharp"> people_alt </span> Users</li>
+        <li id="side-bar-users"><span class="material-icons-sharp"> people_alt </span> Users</li>
       </ul>
     </aside>
     <!-- Main Content -->
@@ -137,7 +137,7 @@
         </dialog>
         <header>
           <h2>Projects</h2>
-          <div style="display: flex; gap: 20px;">
+          <div id="projects-page-header" style="display: flex; gap: 20px;">
             <span style="border: solid 1px var(--primary-grey-200)" id="import-projects-btn" class="material-symbols-outlined" style="scale: 1.2;">
               upload</span
             >
@@ -485,7 +485,7 @@
           <div id="users-header">
             <div style="display: flex; gap: 30px">
               <p>Manage Users</p>
-              <p>(10)</p>
+              <p id="p-user-count">(10)</p>
             </div>
             <div style="display: flex; gap: 10px; align-items: center">
               <span class="material-symbols-outlined"> search </span>
@@ -506,17 +506,8 @@
               >
                 filter_list
               </span>
-              <button
-                id="new-user-btn"
-                style="
-                  display: flex;
-                  gap: 10px;
-                  background-color: var(--primary-blue-200);
-                  border-radius: 5px;
-                  padding: 5px 10px;
-                "
-              >
-                <p>Invite</p>
+              <button id="new-user-btn" >
+                <p style="align-self: center;">Add</p>
                 <span class="material-symbols-outlined"> person_add </span>
               </button>
             </div>
@@ -541,56 +532,20 @@
             <p>Teams</p>
           </div>
           <div id="users-table">
-            <div class="user-entry">
-              <img src="./Assets/TestIcon.jpg" alt="User Pic" />
-              <p>Quentin Hamm</p>
-              <a href="mailto:quentinhamm@test.com">quentinhamm@test.com</a>
-              <div class="user-permissions">
-                <p>Model Data,</p>
-                <p>LCA,</p>
-                <p>Project,</p>
-              </div>
-              <div class="user-teams">
-                <p>BSPN</p>
-                <p>HHBH</p>
-                <p>LZBH</p>
-              </div>
-              <span class="material-symbols-outlined"> more_vert </span>
-            </div>
-            <div class="user-entry">
-              <img src="./Assets/TestIcon2.jpg" alt="User Pic" />
-              <p>Jeff Lincoln</p>
-              <a href="mailto:jefflincoln@test.com">jefflincoln@test.com</a>
-              <div class="user-permissions">
-                <p>Model Data,</p>
-                <p>Project</p>
-              </div>
-              <div class="user-teams">
-                <p>LZBH</p>
-              </div>
-              <span class="material-symbols-outlined"> more_vert </span>
-            </div>
-            <div class="user-entry">
-              <img src="./Assets/testicon3.jpg" alt="User Pic" />
-              <p>Jenna Müller</p>
-              <a href="mailto:jennamüller@test.com">jennamüller@test.com</a>
-              <div class="user-permissions">
-                <p>Model Data,</p>
-                <p>LCA</p>
-              </div>
-              <div class="user-teams">
-                <p>HHBH</p>
-                <p>BSPN</p>
-              </div>
-              <span class="material-symbols-outlined"> more_vert </span>
-            </div>
           </div>
         </div>
         <dialog id="new-user">
-          <form>
-            <h3>Add User</h3>
-            <div class="dialog-container">
-              <div class="form-field-container">
+          <form id="new-user-form">
+            <h3 style="text-align: center; padding: 10px;">Add User</h3>
+            <div id="users-form-container" class="dialog-container">
+              <div 
+                class="form-field-container" 
+                style="
+                  align-self: center;
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                ">
                 <span
                   class="material-symbols-outlined"
                   style="
@@ -617,88 +572,91 @@
                   Click on the icon to add a picture
                 </p>
               </div>
-              <div class="form-field-container">
+              <div class="form-field-container"
+                style="display: flex; align-items: baseline; justify-content: space-between;">
                 <label>Name</label>
-                <input type="text" placeholder="Type name here..." />
+                <input name="name" type="text" placeholder="Type name here..." style="width: 70%;"/>
+              </div>
+              <div class="form-field-container"
+                style="display: flex; align-items: baseline; justify-content: space-between;">
+                <label>@Email</label>
+                <input name="email" type="text" placeholder="email@example.com" style="width: 70%;" />
               </div>
               <div class="form-field-container">
                 <label
-                  ><span class="material-icons-sharp" style="scale: 0.8">
-                    alternate_email </span
-                  >Email</label
+                  ><span class="material-icons-sharp"> groups_3 </span
+                  >Permission</label
                 >
-                <input type="text" placeholder="email@example.com" />
+                <select name="permissions" class="form-input-other">
+                  <option>Developer</option>
+                  <option>Admin</option>
+                  <option>Manager</option>
+                  <option>User</option>
+                  <option>Guest</option>
+                </select>
               </div>
-              <div class="form-field-container">
+              <div class="form-field-container"
+                  style="display: flex; flex-direction: column; gap: 5px; padding-bottom: 20px;">
                 <label
                   ><span class="material-icons-sharp"> manage_accounts </span
-                  >Permissions</label
+                  >Teams</label
                 >
                 <div
                   style="
                     display: grid;
                     grid-template-columns: 30px 1fr;
                     align-items: center;
+                    row-gap: 5px;
+                    column-gap: 10px;
                   "
                 >
                   <input
+                    name="checkBoxOption"
                     type="checkbox"
-                    id="Permission1"
-                    name="Permission1"
-                    value="model-data"
+                    id="Engineering"
+                    value="Engineering"
                     style="width: fit-content"
                   />
-                  <label for="vehicle1" style="margin-bottom: 0">
-                    Allow model management</label
-                  >
+                  <label for="Engineering" style="margin-bottom: 0">Engineering</label>
                   <input
+                    name="checkBoxOption"
                     type="checkbox"
-                    id="Permission2"
-                    name="Permission2"
-                    value="Projekt-Management"
+                    id="Design"
+                    value="Design"
                     style="width: fit-content"
                   />
-                  <label for="vehicle2" style="margin-bottom: 0">
-                    Project management rights</label
-                  >
+                  <label for="Design" style="margin-bottom: 0">Design</label>
                   <input
+                    name="checkBoxOption"
                     type="checkbox"
-                    id="Permission3"
-                    name="Permission3"
-                    value="lca-analysis"
+                    id="Marketing"
+                    value="Marketing"
                     style="width: fit-content"
                   />
-                  <label for="vehicle3" style="margin-bottom: 0">
-                    LCA-Analysis access</label
-                  >
+                  <label for="Marketing" style="margin-bottom: 0">Marketing</label>
                   <input
+                    name="checkBoxOption"
                     type="checkbox"
-                    id="Permission4"
-                    name="Permission4"
-                    value="read-only"
+                    id="Sales"
+                    value="Sales"
                     style="width: fit-content"
                   />
-                  <label for="vehicle3" style="margin-bottom: 0">
-                    Read only</label
-                  >
+                  <label for="Sales" style="margin-bottom: 0">Sales</label>
+                  <input
+                    name="checkBoxOption"
+                    type="checkbox"
+                    id="Management"
+                    value="Management"
+                    style="width: fit-content"
+                  />
+                  <label for="Management" style="margin-bottom: 0">Management</label>
                 </div>
               </div>
-              <div class="form-field-container">
-                <label
-                  ><span class="material-icons-sharp"> groups_3 </span
-                  >Teams</label
-                >
-                <select name="teams" multiple>
-                  <option>HHBH</option>
-                  <option>BSPN</option>
-                  <option>LZBH</option>
-                </select>
-              </div>
               <div class="form-button-container">
-                <button class="form-cancel-btn" id="cancel-user-btn">
+                <button type="button" class="form-cancel-btn" id="cancel-user-btn">
                   Cancel
                 </button>
-                <button class="form-accept-btn" id="accept-user-btn">
+                <button type="submit" class="form-accept-btn" id="submit-user-btn">
                   Add
                 </button>
               </div>

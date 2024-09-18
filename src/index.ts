@@ -1,3 +1,5 @@
+import { IUser, UserPermissions, UserTeams } from './classes/User';
+import { User } from './classes/User';
 import { IProject, BusinessUnit, ProjectStatus } from "./classes/Project";
 import { ProjectsManager } from "./classes/ProjectsManager";
 import { IProjectTask, TaskLogo, TaskStatus } from "./classes/ProjectTask";
@@ -94,22 +96,35 @@ if (importProjectsBtn) {
 }
 
 const sidebarProjectsBtn = document.getElementById("side-bar-projects")
-const projectsPage = document.getElementById("projects-page")
-const detailsPage = document.getElementById("project-details")
+const usersButton = document.getElementById('side-bar-users') as HTMLLIElement;
+
+const projectsPage = document.getElementById("projects-page") as HTMLDivElement;
+const detailsPage = document.getElementById("project-details") as HTMLDivElement;
+const usersPage = document.getElementById('project-users') as HTMLDivElement;
+
 
 if (sidebarProjectsBtn) {
   sidebarProjectsBtn.addEventListener("click", () => {
-    if (!projectsPage) {
-      console.log(`"Projects Page" not found!`)
+    if (!projectsPage || !detailsPage ||!usersPage) {
+      console.log(`Projects Page" not found!`)
       return
-    } else if (!detailsPage) {
-      console.log(`"Details Page" not found!`)
-      return
-    } else {
-      detailsPage.style.display = "none"
-      projectsPage.style.display = "flex"
-    }
+    } 
+    detailsPage.style.display = "none"
+    usersPage.style.display = "none"
+    projectsPage.style.display = "flex"
   })
+}
+
+if (usersButton) {
+  usersButton.addEventListener('click', () => {
+    if (!projectsPage || !detailsPage ||!usersPage) {
+      console.log(`Some Pages are missing!`)
+      return
+    }
+    detailsPage.style.display = "none"
+    projectsPage.style.display = "none"
+    usersPage.style.display = "flex"
+  });
 }
 
 
@@ -241,3 +256,92 @@ if (taskForm && taskForm instanceof HTMLFormElement) {
     toggleModal("task-modal");
   })
 }
+
+const newUsersBtn = document.getElementById('new-user-btn') as HTMLButtonElement;
+const usersTable = document.getElementById('users-table') as HTMLTableElement;
+const newUserForm = document.getElementById('new-user-form') as HTMLFormElement;
+const cancelUserBtn = document.getElementById('cancel-user-btn') as HTMLButtonElement;
+const userCount = document.getElementById('p-user-count') as HTMLParagraphElement;
+const userList: User[] = [];
+
+const defaultUser3: IUser = {
+  name: "Jenna Müller",
+  email: "jennamüller@test.com",
+  permissions: "Developer",
+  teams: ["Engineering", "Design"],
+  imgSrc: "testicon3.jpg"
+}
+
+const defaultUser2: IUser = {
+  name: "Jeff Lincoln",
+  email: "jefflincoln@test.com",
+  permissions: "Manager",
+  teams: ["Marketing", "Management"],
+  imgSrc: "TestIcon2.jpg"
+}
+
+const defaultUser1: IUser = {
+  name: "Quentin Hamm",
+  email: "quentinhamm@test.com",
+  permissions: "Admin",
+  teams: ["Engineering", "Design", "Marketing", "Sales"],
+  imgSrc: "TestIcon.jpg"
+}
+
+function defaultUsers() {
+  const users = [defaultUser1, defaultUser2, defaultUser3]
+  users.forEach(user => {
+    const newUser = new User(user);
+    usersTable.appendChild(newUser.ui);
+    userList.push(newUser);
+  })
+  userCount.textContent = `(${userList.length})`
+}
+defaultUsers();
+
+if (newUsersBtn) {
+  newUsersBtn.addEventListener('click', () => {
+    toggleModal('new-user');
+  })
+}
+
+function getUserFormData(form: HTMLFormElement) {
+  const formData = new FormData(form);
+
+  let teams: string[] = []
+  const Checkboxes = document.getElementsByName("checkBoxOption")
+  for (const option of Checkboxes) {
+    if (option instanceof HTMLInputElement && option.checked) {
+      teams.push(option.value)
+  }
+}
+ 
+  const userData: IUser = {
+    name: formData.get("name") as string,
+    email: formData.get("email") as string,
+    permissions: formData.get("permissions") as UserPermissions,
+    teams: teams as UserTeams[],
+  }
+  return userData
+}
+
+if (newUserForm && newUserForm instanceof HTMLFormElement) {
+  newUserForm.addEventListener("submit", (e) => {
+    e.preventDefault()
+    const userFormData = getUserFormData(newUserForm)
+    try {
+      const newUser = new User(userFormData)
+      usersTable.appendChild(newUser.ui);
+      userList.push(newUser);
+      userCount.textContent = `(${userList.length})`
+      toggleModal("new-user");
+    } catch (err) {
+      errorPopUp(err)
+    }
+  })
+  cancelUserBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    toggleModal("new-user");
+  })
+}
+
