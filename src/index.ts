@@ -97,7 +97,6 @@ if (importProjectsBtn) {
 
 const sidebarProjectsBtn = document.getElementById("side-bar-projects")
 const usersButton = document.getElementById('side-bar-users') as HTMLLIElement;
-
 const projectsPage = document.getElementById("projects-page") as HTMLDivElement;
 const detailsPage = document.getElementById("project-details") as HTMLDivElement;
 const usersPage = document.getElementById('project-users') as HTMLDivElement;
@@ -223,7 +222,6 @@ const addTaskBtn = document.getElementById("add-task-btn")
 const taskContainer = document.getElementById("task-list") as HTMLDivElement
 const taskModal = document.getElementById("task-modal")
 const taskForm = document.getElementById("task-form") as HTMLFormElement
-
 const cancelTaskAddBtn = document.getElementById("cancel-task-btn") as HTMLButtonElement;
 
 if (addTaskBtn && taskModal) {
@@ -256,6 +254,8 @@ if (taskForm && taskForm instanceof HTMLFormElement) {
     toggleModal("task-modal");
   })
 }
+
+// Addition of Users Page. Img not implemented yet but with a working filebase you could upload images to it, and also store the users there
 
 const newUsersBtn = document.getElementById('new-user-btn') as HTMLButtonElement;
 const usersTable = document.getElementById('users-table') as HTMLTableElement;
