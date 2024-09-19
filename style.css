@@ -705,4 +705,15 @@ textarea::placeholder {
   border-radius: 10px;
 }
 
+/* Todo Card Interactives */	
+.to-do-card-status:hover {
+  cursor: pointer;
+  box-shadow: 0px 0px 20px 1px var(--primary-black)
+}
+
+.to-do-card-delete:hover {
+  cursor: pointer;
+  font-weight: 500;
+}
+
 

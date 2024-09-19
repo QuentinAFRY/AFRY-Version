@@ -40,6 +40,7 @@ export class Project implements IProject {
     if (typeof this.finishDate == "string") {this.finishDate = new Date(this.finishDate)}
     if (this.finishDate instanceof Date && isNaN(this.finishDate.getDate())) {this.finishDate = new Date()}
     if (this.name.length<5) {throw new Error(`The name "${this.name}" is invalid. Name must contain at least 5 characters`)}
+    if (this.acronym && this.acronym.length!=4) {throw new Error(`The acronym "${this.acronym}" is invalid. It must consist of 4 letters`)}
     if (!this.id) {this.id = uuidv4()}
     if (this.tasks != undefined) {
       const updateTasks = new Array
@@ -49,28 +50,26 @@ export class Project implements IProject {
       }
       this.tasks = updateTasks
       }
+    if (!this.acronym) {this.setAcronym()}
 
     this.setLogoColor()
-    this.setAcronym()
     this.setUI()
   }
 
-  // Acronym Chekcer - if not provided create a new one based on the name
+  // Acronym Chekcer - if not provided create a new one based on the name! --> 4 letters look better then 2 letters!
   setAcronym() {
-    if (!this.acronym) {
-      const name = this.name
-      const nameParts = name.split(' ')
-      if (nameParts[0].length<4) {
-        const length = nameParts[0].length as number
-        const restLength = 4-length
-        const firstPart = nameParts[0].toUpperCase()
-        const secondPart = nameParts[1].substring(0,restLength).toUpperCase()
-        const newName = firstPart+secondPart
-        this.acronym = newName
-      } else if (nameParts[0].length>=4) {
-        const newName = nameParts[0].substring(0, 4).toUpperCase()
-        this.acronym = newName
-      }
+    const name = this.name
+    const nameParts = name.split(' ')
+    if (nameParts[0].length<4) {
+      const length = nameParts[0].length as number
+      const restLength = 4-length
+      const firstPart = nameParts[0].toUpperCase()
+      const secondPart = nameParts[1].substring(0,restLength).toUpperCase()
+      const newName = firstPart+secondPart
+      this.acronym = newName
+    } else if (nameParts[0].length>=4) {
+      const newName = nameParts[0].substring(0, 4).toUpperCase()
+      this.acronym = newName
     }
   }
 
@@ -184,5 +183,16 @@ export class Project implements IProject {
     const taskContainer = container
     taskContainer.append(newTask.ui)
     this.tasks.push(newTask)
+  }
+
+  updateTasks(tasksData: Partial<ProjectTask[]> | undefined) {
+    if (!tasksData) {return}
+    this.tasks = []
+    for (const task of tasksData) {
+      if (!task) {return}
+      const newTask = new ProjectTask(task as IProjectTask)
+      if (task.id) {newTask.id = task.id}
+      this.tasks.push(newTask)
+    }
   }
 }

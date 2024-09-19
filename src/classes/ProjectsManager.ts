@@ -1,3 +1,4 @@
+import { update } from "three/examples/jsm/libs/tween.module.js"
 import { IProject, Project, BusinessUnit, ProjectStatus } from "./Project"
 
 export class ProjectsManager {
@@ -20,10 +21,6 @@ export class ProjectsManager {
     const nameInUse = projectNames.includes(data.name)
     if (nameInUse) {
       throw new Error (`A Project with the name "${data.name}" already exists`)
-    }
-
-    if (data.acronym.length != 4) {
-      throw new Error (`The acronym "${data.acronym}" is invalid. It must consist of 4 letters`)
     }
     
     const project = new Project(data)
@@ -169,14 +166,20 @@ export class ProjectsManager {
   updateByImport(project, newData: Partial<Project>) {
     for (const key in newData) {
       if (newData.hasOwnProperty(key) && project[key]) {
-        if (key == "finishDate" && newData.finishDate instanceof Date) {
-          const dateVaule = newData?.finishDate.toISOString().split('T')[0]
-          project[key] = dateVaule
-        } else {
-          project[key] = newData[key]
-          if (typeof newData.name =="string" && newData.name.length<5) {throw new Error(`The name "${newData.name}" is invalid. Name must contain at least 5 characters`)}
-          if (typeof newData.acronym =="string" && newData.acronym.length!=4) {throw new Error(`The acronym "${newData.acronym}" is invalid. It must consist of 4 letters`)}
+        if (key == "finishDate" && typeof newData.finishDate == "string") {
+          console.log("This is the finishDate: ", newData.finishDate)
+          const finishDate = new Date(newData.finishDate)
+          project[key] = finishDate
+          continue
         }
+        if (key == "tasks" && newData.tasks != undefined) {
+          console.log("This is the Tasks: ", newData[key])
+          project.updateTasks(newData[key])
+        }
+        project[key] = newData[key]
+        if (typeof newData.name =="string" && newData.name.length<5) {throw new Error(`The name "${newData.name}" is invalid. Name must contain at least 5 characters`)}
+        if (typeof newData.acronym =="string" && newData.acronym.length!=4) {throw new Error(`The acronym "${newData.acronym}" is invalid. It must consist of 4 letters`)}
+
       }
     }
   }
@@ -263,6 +266,7 @@ export class ProjectsManager {
         window.alert(`Import nicht möglich: ${err}`)
         continue
       }}
+      console.log("Imported Projects: ", this.list)
     })
     input.click()
   }

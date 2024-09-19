@@ -74,17 +74,17 @@ export class ProjectTask implements IProjectTask{
             </p>
         </div>
         <div class="to-do-card-body">
-            <div style="display: flex; flex-direction: column; justify-content: space-around; align-items: center">
+            <div style="display: flex; flex-direction: column; justify-content: space-around; align-items: stretch; padding-left: 30px">
                 <p style="padding-right: 5px"> ${this.description? this.description : "Add a description!"}</p>
-                <p style="padding-right: 5px"> Due: ${this.finishDate? this.finishDate.toLocaleDateString() : "Undefined"}
+                <p class="staus-paragraph" style="padding-right: 5px; fonty-style: italic"> Status: ${this.taskStatus.toLocaleUpperCase()}
             </div>
-            <div class="to-do-card-button-container">
+            <div class="to-do-card-button-container" style="width: 20%;">
                 <div class="to-do-card-button">
-                    <button class="to-do-card-status">
+                    <button class="to-do-card-status" style="border-radius: 5px; padding: 5px; border: none">
                         Status
                     </button>
                 </div>
-                <div class="to-do-card-button" >
+                <div class="to-do-card-button" style="width: fit-content;">
                     <div class="to-do-card-delete" style="width: 80%">
                         <span class="material-icons-sharp" style="color: var(--primary-beige)">
                             delete_forever
@@ -98,6 +98,7 @@ export class ProjectTask implements IProjectTask{
         </div>
         `
     }
+
 
     setUIEvents() {
         const body = this.ui.getElementsByClassName("to-do-card-body")[0] as HTMLDivElement
@@ -126,6 +127,7 @@ export class ProjectTask implements IProjectTask{
         }
 
         const statusBtn = this.ui.getElementsByClassName("to-do-card-status")[0]
+        const statusElement = this.ui.getElementsByClassName("staus-paragraph")[0] as HTMLParagraphElement
         if (statusBtn) {
             statusBtn.addEventListener("click", () => {
                 switch (this.taskStatus) {
@@ -142,6 +144,8 @@ export class ProjectTask implements IProjectTask{
                         this.ui.style.backgroundColor = "var(--task-open)"
                         break;
                 }
+                console.log(statusElement, this.taskStatus)
+                statusElement.innerText = `Status: ${this.taskStatus.toLocaleUpperCase()}`
             })
         }
     }
