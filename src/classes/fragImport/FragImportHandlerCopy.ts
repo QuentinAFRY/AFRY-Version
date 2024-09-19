@@ -22,9 +22,9 @@ export class FragImportHandler {
 
     fragImportHandler(button: OBC.Button, fragmentManager: OBC.FragmentManager, tempProperties: IfcProperties | undefined, onPropertiesUpdated: (properties: IfcProperties) => void) {
         button.onClick.add(() => {
-            const input = createFileInput();
+            const input = this.createFileInput();
             input.addEventListener('change', async () => {
-                const updatedProperties = await handleFileSelection(input.files, fragmentManager, tempProperties);
+                const updatedProperties = await this.handleFileSelection(input.files, fragmentManager);
                 if (updatedProperties) {
                     onPropertiesUpdated(updatedProperties);
                 }
