@@ -7,7 +7,7 @@ import * as OBC from "openbim-components";
 import { TodoCreator } from "./bim-components/TodoCreator";
 import { fragImportHandler } from "./classes/fragImport/fragImporter";
 
-
+//* Commit for pre Merge *//
 const projectsListUI = document.getElementById("projects-list") as HTMLElement
 const projectsManager = new ProjectsManager(projectsListUI)
 
