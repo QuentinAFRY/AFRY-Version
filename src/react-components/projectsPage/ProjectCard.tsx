@@ -53,12 +53,12 @@ export function ProjectCard(props: Props) {
     const logoColor = getUniqueRandomValue(colorPicker)
 
     return (
-        <div className='project-card'>
+        <div className='project-card' style={{padding: "10px"}}>
             <div className="card-header">
                 <div className="card-logo" style={{ backgroundColor: logoColor }}>
                 <p>{props.project.acronym}</p>
                 </div>
-                <div>
+                <div style={{paddingLeft: "5px"}}>
                 <h5>{props.project.name}</h5>
                 <p>{props.project.description}</p>
                 </div>

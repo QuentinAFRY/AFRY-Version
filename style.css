@@ -189,7 +189,6 @@ select {
   grid-template-columns: 80px 1fr;
   padding: 5px 15px;
   justify-items: center;
-  border-bottom: 3px solid rgba(var(--Draft-Greywhite-rgb), 0.3);
   height: 70px;
   align-items: center;
 }

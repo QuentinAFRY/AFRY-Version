@@ -1,7 +1,7 @@
 import * as Firestore from "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import { IProject } from "../classes/Project";
-
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
 
 const firebaseConfig = {
   apiKey: "AIzaSyDxG2d_WV5ZMjlwst7MIBSYL0-2Cp3sIRY",
@@ -13,6 +13,39 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app)
+const email = "quentin.hamm@afry.com"
+const pw = "firebase-auth"
+signInWithEmailAndPassword(auth, email, pw)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    console.log(userCredential)
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+});
+
+// 'service cloud.firestore {
+//   match /databases/{database}/documents {
+
+//     // This rule allows anyone with your Firestore database reference to view, edit,
+//     // and delete all data in your Firestore database. It is useful for getting
+//     // started, but it is configured to expire after 30 days because it
+//     // leaves your app open to attackers. At that time, all client
+//     // requests to your Firestore database will be denied.
+//     //
+//     // Make sure to write security rules for your app before that time, or else
+//     // all client requests to your Firestore database will be denied until you Update
+//     // your rules
+//     match /{document=**} {
+//       allow read, write: if request.time < timestamp.date(2024, 10, 2);
+//     }
+//   }
+// }'
+
 
 export const firebaseDB = Firestore.getFirestore(app);
 

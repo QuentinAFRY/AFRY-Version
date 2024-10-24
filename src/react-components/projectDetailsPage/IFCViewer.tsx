@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as OBC from 'openbim-components';
+import * as THREE from "three"
 import { FragmentsGroup, IfcProperties } from "bim-fragment";
 import { fragImportHandler } from "../../classes/fragImport/fragImporter";
 import { TodoCreator } from "../../bim-components/TodoCreator";
@@ -16,10 +17,11 @@ interface Props {
   projectID: string,
 }
 
-export const ViewerContext = React.createContext<IViewerContext>({
+const ViewerContext = React.createContext<IViewerContext>({
   viewer: null,
   setViewer: () => {}
 })
+
 
 export function ViewerProvider( props: { children: React.ReactNode }) {
   const [viewer, setViewer] = React.useState<OBC.Components | null>(null)
@@ -56,9 +58,18 @@ export function IFCViewer(props: Props) {
     const raycasterComponent = new OBC.SimpleRaycaster(viewer)
     viewer.raycaster = raycasterComponent
 
+    const gridColor = new THREE.Color(0x3b3b3b)
+    const grid = new OBC.SimpleGrid(viewer, gridColor, 10, 10, 500)
+    grid.material.uniforms.uSize1.value = 2
+    grid.material.uniforms.uSize2.value = 8
+    grid.visible = true
+    grid.enabled = true
+
     viewer.init()
+
     cameraComponent.updateAspect()
     rendererComponent.postproduction.enabled = true
+    rendererComponent.postproduction.customEffects.excludedMeshes.push(grid.get())
 
     function exportProperties(model: FragmentsGroup) {
       const fragmentProperties = JSON.stringify(model.getLocalProperties())
